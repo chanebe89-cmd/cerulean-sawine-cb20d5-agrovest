@@ -1,0 +1,2923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>AgroVest</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#F2EDE4;--cream2:#EDE6D9;--cream3:#E5DDD0;
+  --green:#1B4332;--green2:#2D6A4F;--green3:#40916C;
+  --brown:#7C4A1E;--brown2:#A0522D;--amber:#C8860A;--amber2:#E8A020;
+  --white:#FFFFFF;--text:#1A1A1A;--muted:#8A7E72;--border:#D4C9B8;
+  --red:#C0392B;--nav:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+
+/* ── LOADING ── */
+#loading{position:fixed;inset:0;background:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
+.load-logo{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:40px;animation:pulse 1.4s infinite;}
+#loading p{color:rgba(255,255,255,.8);font-size:14px;margin-top:16px;letter-spacing:1px;font-weight:500;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.1);opacity:.8;}}
+
+/* ── AUTH PAGES ── */
+.page{display:none;min-height:100vh;background:var(--cream);}
+.page.show{display:block;}
+
+/* AUTH HEADER */
+.auth-top{background:var(--cream);padding:60px 24px 30px;text-align:center;}
+.auth-icon{width:72px;height:72px;margin:0 auto 16px;position:relative;}
+.auth-icon svg{width:100%;height:100%;}
+.auth-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);}
+
+/* FORM */
+.auth-form{padding:24px 20px 40px;}
+.field-group{margin-bottom:18px;}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.field-label span{color:var(--red);}
+.field-wrap{border:1.5px solid var(--border);border-radius:14px;display:flex;align-items:center;padding:14px 16px;background:var(--white);transition:border-color .2s;}
+.field-wrap:focus-within{border-color:var(--green);}
+.field-prefix{font-size:14px;color:var(--muted);font-weight:600;margin-right:2px;white-space:nowrap;}
+.field-divider{width:1.5px;height:22px;background:var(--green);margin:0 12px;border-radius:2px;}
+.field-ico{font-size:18px;margin-right:10px;opacity:.6;}
+.field-input{flex:1;border:none;outline:none;font-family:inherit;font-size:15px;color:var(--text);background:transparent;}
+.field-input::placeholder{color:#BBAAA0;}
+.eye-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:0;opacity:.5;}
+.invite-field .field-wrap{background:#F8F4EE;border-color:#C8B89A;}
+.invite-field .field-ico{opacity:1;}
+
+.auth-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:50px;padding:17px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:all .2s;box-shadow:0 4px 20px rgba(27,67,50,.3);margin-top:8px;}
+.auth-btn:active{transform:scale(.98);}
+.auth-link{text-align:center;margin-top:20px;font-size:14px;color:var(--muted);}
+.auth-link a{color:var(--brown);font-weight:700;text-decoration:none;}
+.forgot-row{display:flex;align-items:center;justify-content:center;margin:16px 0;font-size:14px;color:var(--muted);}
+.forgot-row a{color:var(--brown);font-weight:600;text-decoration:none;margin-left:6px;}
+
+/* ── SUCCESS ── */
+.succ-page{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px 24px;text-align:center;background:var(--cream);}
+.succ-page.show{display:flex;}
+.succ-circle{width:100px;height:100px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:24px;animation:pop .5s ease;}
+@keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+.succ-page h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px;}
+.succ-page p{color:var(--muted);font-size:14px;line-height:1.7;max-width:280px;}
+.bonus-card{background:var(--white);border-radius:20px;padding:20px;margin:24px 0;width:100%;border:1.5px solid var(--border);text-align:center;}
+.bonus-lbl{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.bonus-amt{font-family:'Playfair Display',serif;font-size:40px;font-weight:800;color:var(--green);margin:6px 0;}
+.bonus-sub{font-size:13px;color:var(--muted);}
+
+/* ── APP ── */
+.app{display:none;min-height:100vh;background:var(--cream);}
+.app.show{display:block;}
+.screen{display:none;min-height:calc(100vh - var(--nav));padding-bottom:80px;}
+.screen.on{display:block;}
+
+/* NOTIFY BAR */
+.notif-bar{background:var(--white);padding:10px 16px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;overflow:hidden;border-bottom:1px solid var(--border);}
+.notif-bar .nb-icon{font-size:16px;}
+.notif-ticker{flex:1;overflow:hidden;white-space:nowrap;}
+
+/* HOME HERO */
+.hero-section{position:relative;height:220px;overflow:hidden;}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.hero-bg{width:100%;height:100%;background:linear-gradient(135deg,#2D5016 0%,#3D7A20 40%,#8B6914 70%,#5C3D0A 100%);position:relative;overflow:hidden;}
+.hero-bg::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220"><ellipse cx="320" cy="180" rx="200" ry="120" fill="%23000" opacity="0.2"/><circle cx="80" cy="60" r="60" fill="%23fff" opacity="0.05"/></svg>') center/cover;}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,.55));}
+.hero-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;line-height:1.25;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.82);margin-top:4px;}
+.hero-scenary{position:absolute;top:0;left:0;right:0;bottom:0;}
+/* SVG landscape */
+.hero-landscape{width:100%;height:100%;}
+
+/* MAIN GRID */
+.main-grid{background:var(--white);margin:0;border-radius:0;}
+.grid-row{display:grid;gap:0;}
+.grid-row-2{grid-template-columns:1fr 1fr;}
+.grid-row-4{grid-template-columns:repeat(4,1fr);}
+.grid-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 10px;cursor:pointer;transition:background .15s;gap:10px;position:relative;}
+.grid-item:active{background:var(--cream);}
+.grid-item-divider{border-right:1px solid var(--border);}
+.grid-item-top{border-bottom:1px solid var(--border);}
+.grid-item .icon-wrap{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.iw-brown{background:#FFF0E0;}
+.iw-green{background:#E8F5EE;}
+.iw-blue{background:#E8F0FF;}
+.iw-amber{background:#FFF8E0;}
+.grid-item .item-label{font-size:14px;font-weight:600;color:var(--text);}
+.grid-icon{font-size:26px;}
+
+/* SECTION */
+.sect{padding:16px;}
+.sect-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;color:var(--text);}
+
+/* BALANCE CARD */
+.bal-card{background:var(--green);border-radius:20px;padding:20px;margin:14px 16px;position:relative;overflow:hidden;}
+.bal-card::before{content:'☕';position:absolute;right:16px;top:10px;font-size:60px;opacity:.12;}
+.bal-lbl{color:rgba(255,255,255,.7);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.bal-amt{font-family:'Playfair Display',serif;font-size:36px;font-weight:800;color:#fff;margin:4px 0;}
+.bal-sub{color:rgba(255,255,255,.7);font-size:13px;}
+.bal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.bal-stat{background:rgba(255,255,255,.12);border-radius:12px;padding:12px;text-align:center;}
+.bal-stat .sv{font-size:20px;font-weight:800;color:#fff;font-family:'Playfair Display',serif;}
+.bal-stat .sl{font-size:10px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* INVESTMENT PACKAGES */
+.pkg-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 16px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.pkg-scroll::-webkit-scrollbar{display:none;}
+.pkg-card{min-width:150px;border-radius:16px;padding:16px;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s;}
+.pkg-card:active{transform:scale(.97);}
+.pkg-starter{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:2px solid #FFB74D;}
+.pkg-basic{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);}
+.pkg-silver{background:linear-gradient(135deg,#F5F5F5,#E0E0E0);}
+.pkg-gold{background:linear-gradient(135deg,#FFF8E1,#FFE082);}
+.pkg-premium{background:linear-gradient(135deg,#EDE7F6,#CE93D8);}
+.pkg-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text);}
+.pkg-rate{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--green);margin:4px 0;}
+.pkg-desc{font-size:11px;color:var(--muted);}
+.pkg-hot{position:absolute;top:10px;right:10px;background:var(--amber);color:#fff;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:800;}
+
+/* TRANSACTIONS */
+.tx-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);}
+.tx-item:last-child{border-bottom:none;}
+.tx-ico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tx-ico.in{background:#E8F5EE;}.tx-ico.out{background:#FFF0F0;}.tx-ico.pend{background:#FFF8E0;}
+.tx-det{flex:1;}
+.tx-name{font-size:14px;font-weight:600;}
+.tx-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.tx-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;margin-top:3px;display:inline-block;}
+.tx-badge.pending{background:#FFF8E0;color:var(--amber);}
+.tx-badge.approved{background:#E8F5EE;color:var(--green);}
+.tx-badge.rejected{background:#FFE5E5;color:var(--red);}
+.tx-amt{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;}
+.tx-amt.in{color:var(--green);}.tx-amt.out{color:var(--red);}.tx-amt.pend{color:var(--amber);}
+
+/* TASKS */
+.task-tabs{display:flex;gap:6px;padding:0 16px 14px;}
+.ttab{padding:8px 18px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--muted);transition:all .2s;}
+.ttab.on{background:var(--green);color:#fff;border-color:var(--green);}
+.task-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--white);margin:0 16px 10px;border-radius:16px;cursor:pointer;transition:all .2s;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+.task-item:active{transform:scale(.98);}
+.task-item.done{opacity:.6;pointer-events:none;}
+.task-ico-wrap{width:46px;height:46px;border-radius:14px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.task-info{flex:1;}
+.task-name{font-size:14px;font-weight:600;}
+.task-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.task-reward{text-align:right;}
+.task-amt{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--amber);}
+.task-status{font-size:11px;color:var(--muted);margin-top:2px;}
+.task-status.dn{color:var(--green);font-weight:700;}
+
+/* CHECK-IN CAL */
+.cal-wrap{margin:0 16px;background:var(--white);border-radius:18px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px;}
+.cal-day{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;}
+.cal-day .dr{font-size:8px;font-weight:600;margin-top:1px;}
+.cal-day.done{background:var(--green);color:#fff;}
+.cal-day.today{background:var(--amber);color:#fff;box-shadow:0 2px 8px rgba(200,134,10,.4);}
+.cal-day.fut{background:var(--cream2);color:var(--muted);}
+.ci-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;}
+
+/* MINE / PROFILE */
+.mine-banner{background:linear-gradient(135deg,var(--brown) 0%,var(--amber2) 100%);padding:24px 20px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;}
+.mine-banner::after{content:'☕';position:absolute;right:16px;top:10px;font-size:70px;opacity:.12;}
+.mine-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid rgba(255,255,255,.4);flex-shrink:0;}
+.mine-name{color:#fff;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.mine-id{color:rgba(255,255,255,.75);font-size:12px;margin-top:3px;}
+.mine-lv{margin-top:6px;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;}
+.mine-lv span{color:#fff;font-size:12px;font-weight:600;}
+
+.inv-card{background:var(--green);border-radius:18px;margin:14px 16px;padding:18px;text-align:center;position:relative;overflow:hidden;}
+.inv-card::before{content:'🔗';position:absolute;right:14px;top:6px;font-size:58px;opacity:.12;}
+.inv-card h3{font-family:'Playfair Display',serif;font-size:18px;color:#fff;font-weight:700;}
+.inv-card p{color:rgba(255,255,255,.8);font-size:13px;margin-top:5px;}
+
+.inv-stats{display:grid;grid-template-columns:repeat(3,1fr);margin:0 16px 14px;}
+.isb{text-align:center;padding:14px 8px;background:var(--white);border:1px solid var(--border);}
+.isb:first-child{border-radius:12px 0 0 12px;}
+.isb:last-child{border-radius:0 12px 12px 0;}
+.isv{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--green);}
+.isl{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.3px;margin-top:2px;}
+
+.link-box{background:var(--white);border-radius:16px;margin:0 16px 14px;padding:16px;border:1.5px solid var(--border);}
+.link-box h4{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.link-disp{background:var(--cream);border-radius:10px;padding:11px;font-size:11px;color:var(--muted);word-break:break-all;border:1px dashed var(--border);margin-bottom:10px;line-height:1.6;}
+.link-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.lbtn{border:none;border-radius:10px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;}
+.lbtn:active{transform:scale(.97);}
+.lbtn.copy{background:var(--cream);color:var(--green);border:2px solid var(--green);}
+.lbtn.share{background:var(--green);color:#fff;}
+
+.mine-menu{padding:0 16px;}
+.menu-item{display:flex;align-items:center;gap:13px;padding:14px 16px;background:var(--white);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:background .15s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.menu-item:active{background:var(--cream);}
+.menu-ico{width:40px;height:40px;border-radius:11px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.menu-txt{flex:1;}
+.menu-title{font-size:14px;font-weight:600;}
+.menu-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.menu-arr{color:var(--muted);font-size:20px;}
+
+/* BOTTOM NAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--nav);background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;box-shadow:0 -2px 16px rgba(0,0,0,.07);}
+.nv{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;cursor:pointer;flex:1;}
+.nv .ni{font-size:22px;transition:transform .2s;}
+.nv .nl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.3px;}
+.nv.on .nl{color:var(--green);}
+.nv.on .ni{transform:scale(1.12);}
+.nv-center{position:relative;top:-10px;}
+.nv-center-btn{width:52px;height:52px;border-radius:50%;background:var(--brown);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 14px rgba(124,74,30,.45);}
+
+/* FLOATING BTNS */
+.float-stack{position:fixed;right:12px;bottom:90px;display:flex;flex-direction:column;gap:10px;z-index:90;}
+.float-btn{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.2);border:none;}
+.float-tg{background:#229ED9;color:#fff;}
+.float-cs{background:var(--brown);color:#fff;}
+
+/* MODALS */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center;max-width:430px;left:50%;transform:translateX(-50%);}
+.mo.open{display:flex;}
+.msheet{background:var(--cream);border-radius:24px 24px 0 0;padding:22px 20px 40px;width:100%;max-height:92vh;overflow-y:auto;animation:sUp .26s ease;}
+@keyframes sUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.mhandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.mclose{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);margin-top:-4px;}
+.mtitle{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:18px;}
+.acct-box{background:var(--green);border-radius:16px;padding:16px;margin-bottom:16px;text-align:center;}
+.acct-lbl{color:rgba(255,255,255,.75);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.acct-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:2px;}
+.acct-methods{display:flex;justify-content:center;gap:10px;margin-top:8px;}
+.acct-method{background:rgba(255,255,255,.18);border-radius:8px;padding:4px 10px;color:rgba(255,255,255,.85);font-size:11px;font-weight:600;}
+.note-box{border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.65;}
+.note-warn{background:#FFF8E0;color:var(--amber);}
+.note-ok{background:#E8F5EE;color:var(--green);}
+.fg{margin-bottom:15px;}
+.fl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px;display:block;letter-spacing:.5px;text-transform:uppercase;}
+.fi{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:15px;color:var(--text);outline:none;background:var(--white);transition:border-color .2s;}
+.fi:focus{border-color:var(--green);}
+select.fi{appearance:none;cursor:pointer;}
+.sbtn{width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;transition:all .2s;box-shadow:0 4px 16px rgba(27,67,50,.3);}
+.sbtn:active{transform:scale(.98);}
+.sbtn.amber{background:linear-gradient(135deg,var(--amber),#E67E00);}
+
+/* WEALTH SCREEN */
+.wealth-top{background:linear-gradient(135deg,var(--brown) 0%,#B5631E 50%,var(--amber) 100%);padding:24px 20px;position:relative;overflow:hidden;}
+.wealth-top::before{content:'💰';position:absolute;right:16px;top:8px;font-size:64px;opacity:.15;}
+.wealth-top .wl{color:rgba(255,255,255,.75);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.wealth-top .wa{font-family:'Playfair Display',serif;font-size:36px;font-weight:800;color:#fff;}
+.wealth-top .ws{color:rgba(255,255,255,.75);font-size:13px;margin-top:4px;}
+.wealth-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px;}
+.wact{border-radius:14px;padding:14px;display:flex;align-items:center;gap:9px;cursor:pointer;border:none;font-family:inherit;font-weight:700;font-size:14px;transition:all .2s;}
+.wact:active{transform:scale(.97);}
+.wact.dep{background:var(--green);color:#fff;}
+.wact.wit{background:var(--brown);color:#fff;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:11px 22px;border-radius:100px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90%;text-align:center;}
+.toast.show{opacity:1;}
+
+.white-card{background:var(--white);border-radius:0;}
+.card-r{background:var(--white);border-radius:16px;margin:0 16px 12px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:12px;}
+.pb{height:8px;background:var(--cream2);border-radius:100px;overflow:hidden;margin-top:8px;}
+.pf{height:100%;background:var(--green);border-radius:100px;transition:width .5s ease;}
+
+/* ── ACTIVE PLANS ── */
+.plan-card{background:var(--white);border-radius:18px;margin:0 16px 12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);border:1.5px solid var(--border);}
+.plan-head{background:var(--green);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+.plan-name{color:#fff;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.plan-badge{background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;}
+.plan-badge.done{background:rgba(255,255,255,.15);color:rgba(255,255,255,.6);}
+.plan-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border);}
+.plan-stat{padding:12px 8px;text-align:center;border-right:1px solid var(--border);}
+.plan-stat:last-child{border-right:none;}
+.ps-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:800;color:var(--green);}
+.ps-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.plan-progress{padding:12px 16px;border-bottom:1px solid var(--border);}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.plan-claim{padding:12px 16px;}
+.claim-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.claim-btn:active{transform:scale(.98);}
+.claim-btn.claimed{background:var(--cream2);color:var(--muted);cursor:not-allowed;}
+.claim-btn.completed{background:#E8F5EE;color:var(--green);cursor:not-allowed;}
+.claim-info{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted);font-weight:600;}
+
+/* TEAM SALARY */
+.team-card{background:linear-gradient(135deg,var(--brown),var(--amber));border-radius:18px;margin:0 16px 12px;padding:18px;position:relative;overflow:hidden;}
+.team-card::before{content:'👥';position:absolute;right:14px;top:8px;font-size:60px;opacity:.15;}
+.team-card h3{color:#fff;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.team-card p{color:rgba(255,255,255,.85);font-size:13px;margin-top:5px;line-height:1.6;}
+.team-progress-bar{background:rgba(255,255,255,.2);border-radius:100px;height:10px;margin-top:12px;overflow:hidden;}
+.team-progress-fill{background:#fff;height:100%;border-radius:100px;transition:width .5s;}
+.team-count{color:#fff;font-size:12px;font-weight:700;margin-top:8px;text-align:right;}
+
+/* NO RECHARGE WARNING */
+.no-recharge-box{background:#FFF8E0;border-radius:16px;margin:14px 16px;padding:18px;border:2px dashed var(--amber);text-align:center;}
+.no-recharge-box .ico{font-size:36px;margin-bottom:10px;}
+.no-recharge-box h4{font-weight:800;color:var(--amber);font-size:15px;margin-bottom:6px;}
+.no-recharge-box p{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* ══════════════════════════════════════
+   ADMIN PANEL STYLES
+══════════════════════════════════════ */
+#admin-wrap{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;}
+#adm-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,var(--green) 0%,#2D6A4F 100%);}
+.adm-card{background:#fff;border-radius:24px;padding:36px 28px 32px;width:100%;max-width:360px;box-shadow:0 16px 50px rgba(0,0,0,.25);}
+.adm-top{text-align:center;margin-bottom:26px;}
+.adm-top .em{font-size:52px;}
+.adm-top h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);margin-top:10px;}
+.adm-top p{font-size:13px;color:var(--muted);margin-top:5px;}
+.adm-hint{background:#E8F5EE;border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:12px;color:var(--green);line-height:1.8;border:1px solid #B7DFCC;}
+.adm-fi{width:100%;border:2px solid var(--border);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:15px;outline:none;transition:border-color .2s;background:#F9F6F1;color:var(--text);margin-bottom:14px;}
+.adm-fi:focus{border-color:var(--green);}
+.adm-fw{position:relative;}
+.adm-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;opacity:.5;}
+.adm-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(27,67,50,.35);}
+.adm-err{background:#FFE5E5;border-radius:10px;padding:11px 14px;margin-top:14px;font-size:13px;color:var(--red);display:none;font-weight:600;text-align:center;}
+#adm-app{display:none;}
+.adm-bar{background:var(--green);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:10;}
+.adm-bar .al{font-family:'Playfair Display',serif;color:#fff;font-size:17px;font-weight:700;}
+.adm-bar .ar{display:flex;align-items:center;gap:10px;}
+.adm-badge{background:rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:4px 12px;font-size:12px;font-weight:600;}
+.adm-out{background:transparent;border:1.5px solid rgba(255,255,255,.45);color:#fff;border-radius:8px;padding:5px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;}
+.adm-back{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;}
+.atabs{display:flex;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.atabs::-webkit-scrollbar{display:none;}
+.atab{padding:13px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
+.atab.on{color:var(--green);border-bottom-color:var(--green);}
+.apg{display:none;padding:18px;max-width:1200px;margin:0 auto;}
+.apg.on{display:block;}
+.astats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.astat{background:#fff;border-radius:16px;padding:18px 16px;border:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.astat-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.astat-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:800;margin-top:8px;}
+.asv-g{color:var(--green);}.asv-a{color:var(--amber);}.asv-r{color:var(--red);}.asv-b{color:#2563EB;}
+.abox{background:#fff;border-radius:16px;border:1.5px solid var(--border);margin-bottom:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.abox-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--border);}
+.abox-hd h3{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;}
+.arfbtn{background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:var(--green);transition:all .2s;}
+.arfbtn:hover{background:var(--green);color:#fff;border-color:var(--green);}
+.atbl-wrap{overflow-x:auto;}
+.atbl-wrap table{width:100%;border-collapse:collapse;min-width:500px;}
+.atbl-wrap thead th{background:#F5F0E8;padding:10px 14px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1.5px solid var(--border);white-space:nowrap;}
+.atbl-wrap tbody td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.atbl-wrap tbody tr:last-child td{border-bottom:none;}
+.atbl-wrap tbody tr:hover{background:#FAFAF7;}
+.aempty td{text-align:center;color:var(--muted);padding:30px;font-style:italic;}
+.abdg{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;}
+.abdg.pending{background:#FFF8E0;color:var(--amber);}
+.abdg.approved{background:#E8F5EE;color:var(--green);}
+.abdg.rejected{background:#FFE5E5;color:var(--red);}
+.aab{border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:all .2s;margin-right:4px;}
+.aab-ok{background:#E8F5EE;color:var(--green);}.aab-no{background:#FFE5E5;color:var(--red);}
+.aab-ok:hover{background:var(--green);color:#fff;}.aab-no:hover{background:var(--red);color:#fff;}
+.adj-form2{padding:18px;}
+.adj-form2 p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.65;}
+.adj-grid2{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+.adj-fld{display:flex;flex-direction:column;gap:6px;}
+.adj-fld label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.adj-inp{border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;transition:border-color .2s;}
+.adj-inp:focus{border-color:var(--green);}
+.adj-go{background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.adj-res{margin-top:14px;display:none;}
+.ares-ok{background:#E8F5EE;border-radius:10px;padding:14px;color:var(--green);font-size:14px;font-weight:600;line-height:1.7;}
+.ares-err{background:#FFE5E5;border-radius:10px;padding:14px;color:var(--red);font-size:13px;font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="load-logo">☕</div>
+  <p>AGROVEST</p>
+</div>
+
+<!-- ═══ REGISTER ═══ -->
+<div class="page" id="pg-reg">
+  <div class="auth-top">
+    <div class="auth-icon">
+      <svg viewBox="0 0 72 72" fill="none">
+        <circle cx="36" cy="36" r="36" fill="#1B4332" opacity=".12"/>
+        <text x="36" y="50" text-anchor="middle" font-size="36">☕</text>
+      </svg>
+    </div>
+    <div class="auth-title">Sign In</div>
+  </div>
+  <div class="auth-form">
+    <div class="field-group">
+      <label class="field-label">Mobile Number</label>
+      <div class="field-wrap">
+        <span class="field-ico">📱</span>
+        <span class="field-prefix">+ 251</span>
+        <div class="field-divider"></div>
+        <input class="field-input" type="tel" id="rp" placeholder="Mobile Number"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Enter Password</label>
+      <div class="field-wrap">
+        <span class="field-ico">🔑</span>
+        <input class="field-input" type="password" id="rpw" placeholder="Enter password"/>
+        <button class="eye-btn" onclick="tp('rpw',this)">🙈</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Confirm Password</label>
+      <div class="field-wrap">
+        <span class="field-ico">🔑</span>
+        <input class="field-input" type="password" id="rpw2" placeholder="Enter password again"/>
+        <button class="eye-btn" onclick="tp('rpw2',this)">🙈</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Full Name</label>
+      <div class="field-wrap">
+        <span class="field-ico">👤</span>
+        <input class="field-input" type="text" id="rn" placeholder="Your full name"/>
+      </div>
+    </div>
+    <div class="field-group invite-field">
+      <label class="field-label">Invite Code</label>
+      <div class="field-wrap">
+        <span class="field-ico">🎁</span>
+        <input class="field-input rfi" type="text" id="rref" placeholder="Invite code (optional)"/>
+      </div>
+    </div>
+    <button class="auth-btn" onclick="doReg()">Sign Up</button>
+    <div class="auth-link">Already have an account? <a href="#" onclick="showPage('pg-login');return false;">Sign In</a></div>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="page" id="pg-login">
+  <div class="auth-top">
+    <div class="auth-icon">
+      <svg viewBox="0 0 72 72" fill="none">
+        <circle cx="36" cy="36" r="36" fill="#1B4332" opacity=".12"/>
+        <text x="36" y="50" text-anchor="middle" font-size="36">☕</text>
+      </svg>
+    </div>
+    <div class="auth-title">Sign In</div>
+  </div>
+  <div class="auth-form">
+    <div class="field-group">
+      <label class="field-label">Mobile <span>*</span></label>
+      <div class="field-wrap">
+        <span class="field-ico">📱</span>
+        <input class="field-input" type="tel" id="lp" placeholder="Your Mobile"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Enter Password <span>*</span></label>
+      <div class="field-wrap">
+        <span class="field-ico">🔑</span>
+        <input class="field-input" type="password" id="lpw" placeholder="Enter password"/>
+        <button class="eye-btn" onclick="tp('lpw',this)">🙈</button>
+      </div>
+    </div>
+    <div class="forgot-row">Forgot password? <a href="#">Contact us</a></div>
+    <button class="auth-btn" onclick="doLog()">Ok</button>
+    <div class="auth-link">Don't have an account? <a href="#" onclick="showPage('pg-reg');return false;">Sign Up</a></div>
+  </div>
+</div>
+
+<!-- ═══ SUCCESS ═══ -->
+<div class="succ-page" id="pg-succ">
+  <div class="succ-circle">🎉</div>
+  <h2>Welcome to AgroVest!</h2>
+  <p>Your account is ready. Your welcome bonus has been added.</p>
+  <div class="bonus-card">
+    <div class="bonus-lbl">🎁 Welcome Bonus</div>
+    <div class="bonus-amt">50 Birr</div>
+    <div class="bonus-sub">Added instantly to your wallet</div>
+  </div>
+  <div id="ref-ok" style="display:none;background:#E8F5EE;border-radius:12px;padding:12px;margin-bottom:16px;width:100%;text-align:center;font-size:13px;color:var(--green);font-weight:600;">✅ Your referrer also received 50 Birr!</div>
+  <button class="auth-btn" onclick="enterApp()">Enter Dashboard</button>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div class="app" id="app">
+
+  <!-- HOME -->
+  <div class="screen on" id="sc-home">
+    <!-- Notif bar -->
+    <div class="notif-bar">
+      <span class="nb-icon">🔔</span>
+      <div class="notif-ticker" id="notif-txt">Welcome to AgroVest! Earn daily with Ethiopia's best investment platform. 🌾</div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero-section">
+      <div class="hero-bg">
+        <!-- SVG landscape like the coffee screenshot -->
+        <svg class="hero-landscape" viewBox="0 0 430 220" preserveAspectRatio="xMidYMid slice">
+          <!-- Sky -->
+          <rect width="430" height="220" fill="#3D7A20"/>
+          <!-- Mountains far -->
+          <ellipse cx="80" cy="140" rx="120" ry="80" fill="#2D5A18" opacity=".9"/>
+          <ellipse cx="350" cy="150" rx="140" ry="90" fill="#255014" opacity=".9"/>
+          <!-- Road -->
+          <path d="M180 220 L210 120 L220 120 L260 220Z" fill="#8B7355" opacity=".7"/>
+          <!-- Fields -->
+          <rect x="0" y="160" width="430" height="60" fill="#5C8A2A" opacity=".8"/>
+          <!-- Coffee beans scattered -->
+          <ellipse cx="60" cy="195" rx="18" ry="12" fill="#3D2010" opacity=".6" transform="rotate(-20,60,195)"/>
+          <ellipse cx="120" cy="200" rx="22" ry="14" fill="#2D1808" opacity=".7" transform="rotate(15,120,200)"/>
+          <ellipse cx="300" cy="198" rx="20" ry="13" fill="#3D2010" opacity=".6" transform="rotate(-10,300,198)"/>
+          <ellipse cx="370" cy="203" rx="16" ry="11" fill="#2D1808" opacity=".5" transform="rotate(25,370,203)"/>
+          <!-- Trucks -->
+          <rect x="185" y="185" width="28" height="16" rx="3" fill="#8B6914"/>
+          <rect x="188" y="182" width="20" height="8" rx="2" fill="#6B4F10"/>
+          <circle cx="191" cy="202" r="4" fill="#333"/>
+          <circle cx="207" cy="202" r="4" fill="#333"/>
+          <!-- Water/river -->
+          <ellipse cx="320" cy="155" rx="60" ry="15" fill="#4A90C4" opacity=".5"/>
+          <!-- Trees -->
+          <circle cx="140" cy="145" r="25" fill="#1B4332" opacity=".8"/>
+          <rect x="137" y="165" width="6" height="15" fill="#5C3D0A"/>
+          <circle cx="280" cy="140" r="20" fill="#2D6A4F" opacity=".7"/>
+          <rect x="277" y="157" width="6" height="13" fill="#5C3D0A"/>
+        </svg>
+      </div>
+      <div class="hero-content">
+        <div class="hero-title">Coffee Exporter<br/><span style="font-size:16px;font-weight:400;">The first checkpoint of quality</span></div>
+      </div>
+    </div>
+
+    <!-- Main action grid -->
+    <div class="main-grid white-card">
+      <div class="grid-row grid-row-2 grid-item-top">
+        <div class="grid-item grid-item-divider" onclick="openDep()">
+          <div class="icon-wrap iw-brown">
+            <svg width="30" height="30" viewBox="0 0 30 30"><rect x="4" y="8" width="22" height="16" rx="3" fill="#C8860A"/><rect x="8" y="12" width="6" height="6" rx="1" fill="#fff"/><circle cx="22" cy="19" r="3" fill="#1B4332"/><path d="M20 19h4" stroke="#fff" stroke-width="1.5"/><path d="M22 17v4" stroke="#fff" stroke-width="1.5"/></svg>
+          </div>
+          <span class="item-label">Rechange</span>
+        </div>
+        <div class="grid-item" onclick="om('wm')">
+          <div class="icon-wrap iw-brown">
+            <svg width="30" height="30" viewBox="0 0 30 30"><rect x="3" y="10" width="24" height="16" rx="3" fill="#C8860A"/><path d="M3 14h24" stroke="#fff" stroke-width="2"/><circle cx="22" cy="20" r="3" fill="#fff" opacity=".8"/><rect x="6" y="18" width="8" height="3" rx="1.5" fill="#fff" opacity=".6"/></svg>
+          </div>
+          <span class="item-label">Withdraw</span>
+        </div>
+      </div>
+      <div class="grid-row grid-row-4">
+        <div class="grid-item grid-item-divider" onclick="om('nm')">
+          <div class="icon-wrap iw-amber" style="width:44px;height:44px;border-radius:12px;">
+            <svg width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="#C8860A" opacity=".3"/><rect x="6" y="7" width="12" height="2" rx="1" fill="#C8860A"/><rect x="6" y="11" width="8" height="2" rx="1" fill="#C8860A"/><rect x="6" y="15" width="10" height="2" rx="1" fill="#C8860A"/></svg>
+          </div>
+          <span class="item-label" style="font-size:12px;">News</span>
+        </div>
+        <div class="grid-item grid-item-divider" onclick="om('abm')">
+          <div class="icon-wrap iw-green" style="width:44px;height:44px;border-radius:12px;">
+            <svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2" fill="#1B4332" opacity=".3"/><path d="M4 10h16" stroke="#1B4332" stroke-width="1.5"/><rect x="14" y="13" width="4" height="3" rx="1" fill="#1B4332"/></svg>
+          </div>
+          <span class="item-label" style="font-size:12px;">About</span>
+        </div>
+        <div class="grid-item grid-item-divider" onclick="om('cgm')">
+          <div class="icon-wrap" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#FF6B35,#FFB347);">
+            <svg width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="11" rx="2" fill="#fff" opacity=".9"/><rect x="3" y="7" width="18" height="4" rx="1.5" fill="#fff" opacity=".6"/><path d="M12 7V21" stroke="#FF6B35" stroke-width="1.5"/><path d="M12 7c0 0-2-4 0-5s2 2 0 5" fill="#fff" opacity=".8"/><path d="M12 7c0 0 2-4 0-5S10 4 12 7" fill="#fff" opacity=".6"/></svg>
+          </div>
+          <span class="item-label" style="font-size:12px;">Cash gift</span>
+        </div>
+        <div class="grid-item" onclick="om('hcm')">
+          <div class="icon-wrap iw-amber" style="width:44px;height:44px;border-radius:12px;">
+            <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#C8860A" opacity=".5"/><path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#C8860A" stroke-width="2" fill="none"/><circle cx="18" cy="6" r="3" fill="#C8860A"/><path d="M16.5 6h3M18 4.5v3" stroke="#fff" stroke-width="1.2"/></svg>
+          </div>
+          <span class="item-label" style="font-size:12px;">Help</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="bal-card">
+      <div class="bal-lbl">Total Balance</div>
+      <div class="bal-amt" id="hbal">0 Birr</div>
+      <div class="bal-sub" id="hbal-sub">Keep growing! 🌱</div>
+      <div class="bal-row">
+        <div class="bal-stat"><div class="sv" id="s-plans">0</div><div class="sl">Active Plans</div></div>
+        <div class="bal-stat"><div class="sv" id="s-refs">0</div><div class="sl">Referrals</div></div>
+      </div>
+    </div>
+
+    <!-- Investment packages -->
+    <div class="sect">
+      <div class="sect-title">Investment Packages</div>
+    </div>
+    <div class="pkg-scroll">
+      <div class="pkg-card pkg-starter" onclick="om('im')"><div class="pkg-name">🌱 AMD1</div><div class="pkg-rate" style="color:#E65100;">75₿</div><div class="pkg-desc">Daily · Min 1,000 Birr · 30 days</div></div>
+      <div class="pkg-card pkg-basic" onclick="om('im')"><div class="pkg-name">🌿 AMD2</div><div class="pkg-rate">110₿</div><div class="pkg-desc">Daily · Min 2,500 Birr · 46 days</div></div>
+      <div class="pkg-card pkg-silver" onclick="om('im')"><div class="pkg-name">⚪ AMD3</div><div class="pkg-rate">270₿</div><div class="pkg-desc">Daily · Min 6,000 Birr · 45 days</div></div>
+      <div class="pkg-card pkg-gold" onclick="om('im')"><div class="pkg-hot">HOT</div><div class="pkg-name">🥇 AMD4</div><div class="pkg-rate">700₿</div><div class="pkg-desc">Daily · Min 15,000 Birr · 43 days</div></div>
+      <div class="pkg-card pkg-premium" onclick="om('im')"><div class="pkg-hot">VIP</div><div class="pkg-name">💎 AMD5</div><div class="pkg-rate">1,100₿</div><div class="pkg-desc">Daily · Min 31,000 Birr · 60 days</div></div>
+      <div class="pkg-card" style="min-width:150px;border-radius:16px;padding:16px;flex-shrink:0;cursor:pointer;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #00ff88;" onclick="om('im')"><div class="pkg-hot" style="background:#00b894;">ELITE</div><div class="pkg-name" style="color:#fff;">👑 AMD6</div><div class="pkg-rate" style="color:#00ff88;">2,200₿</div><div class="pkg-desc" style="color:rgba(255,255,255,.7);">Daily · Min 64,000 Birr · 60 days</div></div>
+    </div>
+    <div style="height:10px;"></div>
+  </div>
+
+  <!-- WEALTH -->
+  <div class="screen" id="sc-wealth">
+    <div class="wealth-top">
+      <div class="wl">Total Wallet Balance</div>
+      <div class="wa" id="wbal">0 Birr</div>
+      <div class="ws">Grow your wealth daily 📈</div>
+    </div>
+    <div class="wealth-actions">
+      <button class="wact dep" onclick="openDep()">⬇️ Recharge</button>
+      <button class="wact wit" onclick="om('wm')">⬆️ Withdraw</button>
+    </div>
+    <div class="sect" style="padding-bottom:4px;"><div class="sect-title">Transaction History</div></div>
+    <div class="white-card" style="border-radius:0;margin-bottom:0;">
+      <div id="txlist"></div>
+    </div>
+  </div>
+
+  <!-- TASK -->
+  <div class="screen" id="sc-task">
+    <div style="background:var(--white);padding:16px 16px 0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">Tasks &amp; Rewards</div>
+        <button onclick="fbSyncMyReferrals();refreshTasks();toast('🔄 Syncing referrals...')" style="background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:var(--green);">🔄 Sync</button>
+      </div>
+      <div class="task-tabs">
+        <div class="ttab on" onclick="stt(this,'ttd')">📋 Daily</div>
+        <div class="ttab" onclick="stt(this,'ttp');renderPlans()">💼 My Plans</div>
+        <div class="ttab" onclick="stt(this,'ttc')">📅 Check-In</div>
+        <div class="ttab" onclick="stt(this,'tts')">⭐ Special</div>
+      </div>
+    </div>
+    <!-- Daily -->
+    <div id="ttd" style="padding-top:14px;">
+      <div class="task-item" id="ti-tg" onclick="ct('tg',20,'Follow Telegram Channel')"><div class="task-ico-wrap">📲</div><div class="task-info"><div class="task-name">Follow Telegram Channel</div><div class="task-desc">Join our official channel</div></div><div class="task-reward"><div class="task-amt">+20</div><div class="task-status" id="ts-tg">Claim</div></div></div>
+      <div class="task-item" id="ti-fb" onclick="ct('fb',15,'Like Facebook Page')"><div class="task-ico-wrap">👍</div><div class="task-info"><div class="task-name">Like Facebook Page</div><div class="task-desc">Like &amp; follow our page</div></div><div class="task-reward"><div class="task-amt">+15</div><div class="task-status" id="ts-fb">Claim</div></div></div>
+      <div class="task-item" id="ti-vid" onclick="ct('vid',10,'Watch Promo Video')"><div class="task-ico-wrap">▶️</div><div class="task-info"><div class="task-name">Watch Promo Video</div><div class="task-desc">Watch our 30-second video</div></div><div class="task-reward"><div class="task-amt">+10</div><div class="task-status" id="ts-vid">Claim</div></div></div>
+      <div class="task-item" id="ti-shr" onclick="ct('shr',25,'Share Invite Link')"><div class="task-ico-wrap">🔗</div><div class="task-info"><div class="task-name">Share Invite Link</div><div class="task-desc">Share with 3 friends</div></div><div class="task-reward"><div class="task-amt">+25</div><div class="task-status" id="ts-shr">Claim</div></div></div>
+      <div class="task-item" id="ti-ig" onclick="ct('ig',20,'Post on Instagram Story')"><div class="task-ico-wrap">📸</div><div class="task-info"><div class="task-name">Post on Instagram Story</div><div class="task-desc">Share our post on story</div></div><div class="task-reward"><div class="task-amt">+20</div><div class="task-status" id="ts-ig">Claim</div></div></div>
+    </div>
+    <!-- MY PLANS -->
+    <div id="ttp" style="display:none;padding-top:14px;">
+      <div id="plans-list"></div>
+    </div>
+    <!-- Check-In -->
+    <div id="ttc" style="display:none;padding:14px 0;">
+      <div class="cal-wrap">
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;">📅 Daily Check-In</div>
+        <div class="cal-grid" id="cal"></div>
+        <button class="ci-btn" onclick="doCI()">✅ Check In Today (+5 Birr)</button>
+      </div>
+    </div>
+    <!-- Special -->
+    <div id="tts" style="display:none;padding-top:14px;">
+      <div class="team-card">
+        <h3>👥 Team Salary</h3>
+        <p>Refer <strong>40 people</strong> to unlock your monthly team salary of <strong>500 Birr</strong>!</p>
+        <div class="team-progress-bar"><div class="team-progress-fill" id="team-prog" style="width:0%"></div></div>
+        <div class="team-count" id="team-count">0 / 40 members</div>
+      </div>
+      <div class="task-item" id="ti-r3" onclick="ct('r3',50,'Refer 3 Friends')"><div class="task-ico-wrap">👥</div><div class="task-info"><div class="task-name">Refer 3 Friends</div><div class="task-desc">Get 3 friends to register</div></div><div class="task-reward"><div class="task-amt">+150</div><div class="task-status" id="ts-r3">0/3</div></div></div>
+      <div class="task-item" id="ti-dep1" onclick="ct('dep1',30,'First Recharge')"><div class="task-ico-wrap">💳</div><div class="task-info"><div class="task-name">First Recharge</div><div class="task-desc">Make your first recharge</div></div><div class="task-reward"><div class="task-amt">+30</div><div class="task-status" id="ts-dep1">Claim</div></div></div>
+      <div class="task-item" id="ti-inv1" onclick="ct('inv1',50,'First Investment')"><div class="task-ico-wrap">💰</div><div class="task-info"><div class="task-name">First Investment</div><div class="task-desc">Activate any investment plan</div></div><div class="task-reward"><div class="task-amt">+50</div><div class="task-status" id="ts-inv1">Claim</div></div></div>
+      <div class="task-item" id="ti-vip" onclick="ct('vip',500,'VIP Upgrade')"><div class="task-ico-wrap">💎</div><div class="task-info"><div class="task-name">VIP Upgrade</div><div class="task-desc">Purchase AMD5 (31,000₿) or AMD6 (64,000₿)</div></div><div class="task-reward"><div class="task-amt">+500</div><div class="task-status" id="ts-vip">🔒 Locked</div></div></div>
+      <div class="task-item" id="ti-team" onclick="claimTeam()"><div class="task-ico-wrap">🏆</div><div class="task-info"><div class="task-name">Team Salary (40 Members)</div><div class="task-desc">Reach 40 confirmed referrals</div></div><div class="task-reward"><div class="task-amt">+500</div><div class="task-status" id="ts-team">0/40</div></div></div>
+    </div>
+    <div style="height:14px;"></div>
+  </div>
+
+  <!-- MINE -->
+  <div class="screen" id="sc-mine">
+    <div class="mine-banner">
+      <div class="mine-avatar" onclick="secretTap()" style="cursor:pointer;">🧑‍🌾</div>
+      <div>
+        <div class="mine-name" id="mname">User</div>
+        <div class="mine-id" id="muid">ID: —</div>
+        <div class="mine-lv">⭐ <span id="mlvt">Level 1 · Starter</span></div>
+      </div>
+    </div>
+    <div class="inv-card">
+      <h3>🔗 Invite &amp; Earn</h3>
+      <p>Earn 50 Birr for every friend who joins!</p>
+    </div>
+    <div class="inv-stats">
+      <div class="isb"><div class="isv" id="is-i">0</div><div class="isl">Invited</div></div>
+      <div class="isb"><div class="isv" id="is-c">0</div><div class="isl">Confirmed</div></div>
+      <div class="isb"><div class="isv" id="is-e">0</div><div class="isl">Earned ₿</div></div>
+    </div>
+    <!-- Firebase sync button -->
+    <div style="margin:0 16px 14px;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#E8F5EE,#D4EDE1);border-radius:12px;padding:12px 16px;border:1.5px solid #B7DFCC;">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;color:var(--green);">🔔 Referral count not updated?</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Tap Sync to fetch latest registrations from server</div>
+      </div>
+      <button onclick="var btn=this;btn.disabled=true;btn.textContent='⏳ Syncing...';fbSyncMyReferrals().finally(function(){btn.disabled=false;btn.textContent='🔄 Sync Now';})" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">🔄 Sync Now</button>
+    </div>
+
+    <!-- My Referrals List -->
+    <div style="margin:0 16px 14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;">👥 My Referrals</div>
+        <div style="font-size:12px;color:var(--muted);" id="ref-count-lbl">0 people</div>
+      </div>
+      <div id="my-referrals-list" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:var(--cream);border-radius:12px;padding:14px;text-align:center;font-size:13px;color:var(--muted);border:1.5px dashed var(--border);">
+          No referrals yet. Share your link and tap 🔄 Sync Now!
+        </div>
+      </div>
+    </div>
+    <div class="link-box">
+      <h4>🔗 Your Invite Link</h4>
+      <div class="link-disp" id="mylink">Loading...</div>
+      <div class="link-btns">
+        <button class="lbtn copy" onclick="cpL()">📋 Copy</button>
+        <button class="lbtn share" onclick="shL()">✈️ Share</button>
+      </div>
+    </div>
+    <div class="mine-menu">
+      <div class="menu-item" onclick="om('pm')"><div class="menu-ico">👤</div><div class="menu-txt"><div class="menu-title">Edit Profile</div><div class="menu-sub">Update your name &amp; info</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="om('scm')"><div class="menu-ico">🔒</div><div class="menu-txt"><div class="menu-title">Security</div><div class="menu-sub">Change your password</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="sw('wealth')"><div class="menu-ico">🧾</div><div class="menu-txt"><div class="menu-title">Transaction History</div><div class="menu-sub">All deposits &amp; withdrawals</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="om('bkm')"><div class="menu-ico">💳</div><div class="menu-txt"><div class="menu-title">Bank Account</div><div class="menu-sub">Save withdrawal account</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="window.open('https://t.me/agrovaultmanager','_blank')"><div class="menu-ico">❓</div><div class="menu-txt"><div class="menu-title">Help &amp; Support</div><div class="menu-sub">@agrovaultmanager on Telegram</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="window.open('https://t.me/agrovault','_blank')"><div class="menu-ico">👥</div><div class="menu-txt"><div class="menu-title">Official Group</div><div class="menu-sub">@agrovault — Join our community</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-item" onclick="location.href='#admin';setTimeout(function(){var w=document.getElementById('admin-wrap');if(w){w.style.cssText='display:block!important;position:fixed;inset:0;z-index:99999;overflow-y:auto;background:#ECEAE3;';var sess=localStorage.getItem('av4_admin_sess');var s=sess?JSON.parse(sess):'';if(s==='admin@agrovest.app'||s==='ok'){document.getElementById('adm-app').style.display='block';document.getElementById('adm-login').style.display='none';if(typeof aLoadOv==='function')aLoadOv();if(typeof aLoadDeps==='function')aLoadDeps();if(typeof aLoadWits==='function')aLoadWits();}else{document.getElementById('adm-login').style.display='flex';document.getElementById('adm-app').style.display='none';}}},100);" style="border-top:2px dashed var(--border);margin-top:8px;"><div class="menu-ico">🔑</div><div class="menu-txt"><div class="menu-title" style="color:var(--green);">Admin Panel</div><div class="menu-sub">System management &amp; control</div></div><div class="menu-arr" style="color:var(--green);">›</div></div>
+      <div class="menu-item" onclick="doOut()"><div class="menu-ico">🚪</div><div class="menu-txt"><div class="menu-title">Sign Out</div><div class="menu-sub">Log out of account</div></div><div class="menu-arr">›</div></div>
+    </div>
+    <div style="height:14px;"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="botnav">
+    <div class="nv on" id="nv-home" onclick="sw('home')"><div class="ni">🏠</div><div class="nl">Home</div></div>
+    <div class="nv" id="nv-wealth" onclick="sw('wealth')"><div class="ni">💼</div><div class="nl">Wealth</div></div>
+    <div class="nv nv-center" onclick="sw('home')"><div class="nv-center-btn">☕</div></div>
+    <div class="nv" id="nv-task" onclick="sw('task')"><div class="ni">✅</div><div class="nl">Task</div></div>
+    <div class="nv" id="nv-mine" onclick="sw('mine')"><div class="ni">👤</div><div class="nl">Mine</div></div>
+  </div>
+
+  <!-- FLOATING BUTTONS -->
+  <div class="float-stack">
+    <button class="float-btn float-cs" title="Support" onclick="window.open('https://t.me/agrovaultmanager','_blank')">🤖</button>
+    <button class="float-btn float-tg" title="Official Group" onclick="window.open('https://t.me/agrovault','_blank')">✈️</button>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- NEWS MODAL -->
+<div class="mo" id="nm" onclick="cmo(event,'nm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('nm')">✕</button>
+    <div class="mtitle">📢 Latest News</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      <div style="background:var(--cream);border-radius:14px;padding:16px;border:1.5px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="background:var(--green);color:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">NEW</div>
+          <div style="font-size:11px;color:var(--muted);">March 2026</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:5px;">🌱 AgroVest Platform Launched!</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">AgroVest is now officially live on agrovest.et. Ethiopia's first agricultural investment earning platform. Join today and start earning daily!</div>
+      </div>
+      <div style="background:var(--cream);border-radius:14px;padding:16px;border:1.5px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="background:var(--amber);color:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">UPDATE</div>
+          <div style="font-size:11px;color:var(--muted);">March 2026</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:5px;">💎 AMD5 & AMD6 VIP Plans Available</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">Premium investment packages now available. AMD5 earns 1,100 Birr/day and AMD6 earns 2,200 Birr/day for 60 days!</div>
+      </div>
+      <div style="background:var(--cream);border-radius:14px;padding:16px;border:1.5px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="background:#2563EB;color:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">INFO</div>
+          <div style="font-size:11px;color:var(--muted);">March 2026</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:5px;">🔗 3-Level Referral Commission</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">Invite friends and earn 10% commission on their recharges. Your downline earns you 2% (Level 2) and 1% (Level 3) automatically!</div>
+      </div>
+    </div>
+    <button class="sbtn" onclick="window.open('https://t.me/agrovault','_blank')">📢 Join Official Telegram Group</button>
+  </div>
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="mo" id="abm" onclick="cmo(event,'abm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('abm')">✕</button>
+    <div class="mtitle">ℹ️ About AgroVest</div>
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:56px;">☕</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--green);">AgroVest</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Agricultural Investment Platform</div>
+    </div>
+    <div style="background:var(--cream);border-radius:14px;padding:16px;margin-bottom:12px;border:1.5px solid var(--border);">
+      <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:8px;">🌾 Our Mission</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8;">AgroVest connects Ethiopian investors with agricultural opportunities. Our platform enables everyday people to invest in farming and earn consistent daily returns.</div>
+    </div>
+    <div style="background:var(--cream);border-radius:14px;padding:16px;margin-bottom:12px;border:1.5px solid var(--border);">
+      <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:10px;">📊 Platform Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--green);">6</div><div style="font-size:11px;color:var(--muted);">Investment Plans</div></div>
+        <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--amber);">24h</div><div style="font-size:11px;color:var(--muted);">Support Available</div></div>
+        <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--green);">3</div><div style="font-size:11px;color:var(--muted);">Referral Levels</div></div>
+        <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--amber);">🇪🇹</div><div style="font-size:11px;color:var(--muted);">Ethiopia</div></div>
+      </div>
+    </div>
+    <div style="background:var(--cream);border-radius:14px;padding:16px;margin-bottom:16px;border:1.5px solid var(--border);">
+      <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:8px;">📞 Contact Us</div>
+      <div style="font-size:13px;color:var(--muted);line-height:2;">
+        <div>🌐 Website: <strong>agrovest.et</strong></div>
+        <div>✈️ Telegram: <strong>@agrovault</strong></div>
+        <div>🤖 Support: <strong>@agrovaultmanager</strong></div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--muted);">Version 1.0 · © 2026 AgroVest. All rights reserved.</div>
+  </div>
+</div>
+
+<!-- HELP CENTER MODAL -->
+<div class="mo" id="hcm" onclick="cmo(event,'hcm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('hcm')">✕</button>
+    <div class="mtitle">❓ Help Center</div>
+    <!-- Contact buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+      <button onclick="window.open('https://t.me/agrovaultmanager','_blank')" style="background:linear-gradient(135deg,#0088cc,#229ED9);color:#fff;border:none;border-radius:14px;padding:16px 10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:26px;">🤖</span>Support Bot
+      </button>
+      <button onclick="window.open('https://t.me/agrovault','_blank')" style="background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:14px;padding:16px 10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:26px;">👥</span>Community
+      </button>
+    </div>
+    <!-- FAQ -->
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:12px;">Frequently Asked Questions</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ How do I start earning?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">Recharge your account (min 1,000 Birr), then activate an investment plan. Each day come back to claim your daily income!</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ When is my recharge credited?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">After you submit a recharge request, our admin team verifies your payment and credits your account within 1–2 hours.</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ How do referral commissions work?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">Share your invite link. When your friend recharges, you earn 10% commission automatically. Level 2 earns 2%, Level 3 earns 1%.</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ Why can't I withdraw?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">You must have an active investment plan. Withdrawals are only Mon–Sat, 10:00AM–6:00PM. Only 1 withdrawal per day is allowed.</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ What is the withdrawal fee?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">A 20% handling fee is deducted from each withdrawal. For example, if you withdraw 1,000 Birr, you receive 800 Birr.</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:14px;border:1.5px solid var(--border);">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:5px;">❓ My referral count is wrong?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">Go to Task tab and tap the 🔄 Refresh button. Your referral count will update to show the latest number.</div>
+      </div>
+    </div>
+    <button class="sbtn" onclick="window.open('https://t.me/agrovaultmanager','_blank')">💬 Chat with Support on Telegram</button>
+  </div>
+</div>
+
+<!-- CASH GIFT -->
+<div class="mo" id="cgm" onclick="cmo(event,'cgm')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <button class="mclose" onclick="cm('cgm')">✕</button>
+    <!-- Header banner -->
+    <div style="background:linear-gradient(135deg,#FF6B35,#FFB347);border-radius:16px;padding:22px 20px 18px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
+      <div style="font-size:42px;margin-bottom:6px;">🎁</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#fff;">Claim Gift</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.85);margin-top:4px;">Enter your gift code to claim 0–150 Birr bonus!</div>
+      <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.12;">🎁</div>
+    </div>
+    <!-- Code input -->
+    <div class="fg">
+      <label class="fl">Verify Code</label>
+      <div style="position:relative;">
+        <input class="fi" type="text" id="cg-code" placeholder="Enter code e.g. Y3FYHB" maxlength="8"
+          style="text-transform:uppercase;font-family:monospace;font-size:18px;font-weight:700;letter-spacing:3px;text-align:center;"
+          oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+    </div>
+    <div id="cg-result" style="display:none;margin-bottom:16px;"></div>
+    <button class="sbtn" style="background:linear-gradient(135deg,#FF6B35,#FFB347);box-shadow:0 4px 16px rgba(255,107,53,.4);" onclick="claimGift()">🎁 Claim Now</button>
+    <div style="margin-top:14px;text-align:center;font-size:12px;color:var(--muted);">Each code can only be used once. Codes are time-limited.</div>
+  </div>
+</div>
+
+<!-- RECHARGE -->
+<div class="mo" id="dm" onclick="cmo(event,'dm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('dm')">✕</button>
+
+    <!-- STEP 1: SELECT BANK -->
+    <div id="dep-step1">
+      <div class="mtitle">⬇️ Recharge</div>
+      <div style="background:var(--green);border-radius:14px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:rgba(255,255,255,.7);font-weight:600;">Available Balance</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:#fff;" id="dep-bal-show">0 ETB</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Select Payment Method</div>
+
+      <!-- Bank cards -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div onclick="selectBank('Telebirr','🟣','#673AB7','Min: ETB 100 | Max: ETB 500,000')" style="display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;" onmousedown="this.style.background='#F0EBF8'" onmouseup="this.style.background='var(--white)'">
+          <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#673AB7,#9C27B0);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">📱</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:15px;color:var(--text);">Telebirr</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Min: ETB 100 | Max: ETB 500,000</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </div>
+
+        <div onclick="selectBank('CBE Birr','🏦','#0D47A1','Min: ETB 100 | Max: ETB 1,000,000')" style="display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;">
+          <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#0D47A1,#1565C0);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏦</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:15px;color:var(--text);">Commercial Bank of Ethiopia</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Min: ETB 100 | Max: ETB 1,000,000</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </div>
+
+        <div onclick="selectBank('Hello Cash','🟢','#2E7D32','Min: ETB 100 | Max: ETB 200,000')" style="display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;">
+          <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#2E7D32,#43A047);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">💚</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:15px;color:var(--text);">Hello Cash</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Min: ETB 100 | Max: ETB 200,000</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </div>
+
+        <div onclick="selectBank('Amhara Bank','🟠','#E65100','Min: ETB 100 | Max: ETB 1,000,000')" style="display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;">
+          <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#E65100,#FF6D00);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏛️</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:15px;color:var(--text);">Amhara Bank</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Min: ETB 100 | Max: ETB 1,000,000</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </div>
+
+        <div onclick="selectBank('Awash Bank','🔵','#1976D2','Min: ETB 100 | Max: ETB 1,000,000')" style="display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;">
+          <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#1976D2,#42A5F5);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🔷</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:15px;color:var(--text);">Awash Bank</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Min: ETB 100 | Max: ETB 1,000,000</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 2: ENTER AMOUNT -->
+    <div id="dep-step2" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <button onclick="depBack()" style="background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:var(--text);">← Back</button>
+        <div class="mtitle" style="margin:0;font-size:17px;">Recharge</div>
+      </div>
+
+      <!-- Selected bank display -->
+      <div id="dep-bank-card" style="display:flex;align-items:center;gap:14px;border-radius:16px;padding:16px;margin-bottom:20px;border:1.5px solid var(--border);background:var(--cream);">
+        <div id="dep-bank-ico" style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;"></div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Payment Method</div>
+          <div id="dep-bank-name" style="font-weight:800;font-size:16px;margin-top:3px;"></div>
+        </div>
+      </div>
+
+      <!-- Account number to pay -->
+      <div style="background:var(--green);border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Send Payment To This Account</div>
+        <div style="font-family:monospace;font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;">1000251024287</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;">AgroVest Official Account</div>
+      </div>
+
+      <!-- Amount input -->
+      <div style="margin-bottom:6px;">
+        <label class="fl">Amount (ETB)</label>
+        <input class="fi" type="number" id="damt" placeholder="Enter recharge amount"/>
+        <div id="dep-minmax" style="font-size:12px;color:var(--muted);margin-top:6px;font-weight:600;"></div>
+      </div>
+
+      <div class="fg" style="margin-top:14px;"><label class="fl">Your Name / Transaction Reference</label>
+        <input class="fi" type="text" id="dref" placeholder="Your name or TXN ID from payment app"/>
+      </div>
+      <input type="hidden" id="dmeth"/>
+
+      <div class="note-box note-warn" style="margin-bottom:16px;">⏳ Admin will verify and credit within <strong>1–2 hours</strong> after you send the payment.</div>
+
+      <button class="sbtn" onclick="subDep()" style="margin-bottom:10px;">✅ Submit Recharge Request</button>
+      <button onclick="depBack()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:14px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;color:var(--text);cursor:pointer;">Return</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="mo" id="wm" onclick="cmo(event,'wm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('wm')">✕</button>
+    <div class="mtitle">⬆️ Withdraw Funds</div>
+
+    <!-- Withdrawal Tips -->
+    <div style="background:linear-gradient(135deg,#FFF8E0,#FFF3CC);border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1.5px solid #F0C040;">
+      <div style="font-size:12px;font-weight:800;color:var(--amber);margin-bottom:10px;letter-spacing:.5px;">📋 Withdrawal Tips</div>
+      <div style="font-size:12px;color:#5A4A00;line-height:2;">
+        <div>① Withdrawal requests accepted <strong>10:00 AM – 6:00 PM</strong> (Except Sunday)</div>
+        <div>② Minimum amount: <strong>200 ETB</strong>. A handling fee of <strong>20%</strong> will be deducted from each transaction</div>
+        <div>③ Transferring funds may take <strong>2 to 24 hours</strong></div>
+        <div>④ You must have an <strong>active product</strong> to withdraw money</div>
+        <div>⑤ Only <strong>one withdrawal request per day</strong> is allowed to ensure all requests are processed on time</div>
+        <div>⑥ Enter your bank information <strong>correctly</strong> to avoid transaction delays</div>
+        <div>⑦ If your withdrawal does not reflect within the given time frame, contact your <strong>hiring manager</strong> to process your withdrawal</div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <div style="background:var(--cream);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Min Deposit</div>
+        <div style="font-size:13px;font-weight:800;color:var(--green);margin-top:3px;">1,000 ₿</div>
+      </div>
+      <div style="background:var(--cream);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Min Withdraw</div>
+        <div style="font-size:13px;font-weight:800;color:var(--amber);margin-top:3px;">200 ₿</div>
+      </div>
+      <div style="background:var(--cream);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Fee</div>
+        <div style="font-size:13px;font-weight:800;color:var(--red);margin-top:3px;">20%</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+      <div style="background:var(--cream);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Working Days</div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-top:3px;">Mon – Sat</div>
+      </div>
+      <div style="background:var(--cream);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Processing</div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-top:3px;">Within 24 hrs</div>
+      </div>
+    </div>
+
+    <!-- Company Rules -->
+    <div style="background:#F0F4FF;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1.5px solid #C8D8FF;">
+      <div style="font-size:12px;font-weight:800;color:#2563EB;margin-bottom:8px;">📋 Company Rules</div>
+      <div style="font-size:12px;color:#1E3A8A;line-height:2;">
+        <div>◉ Minimum deposit: <strong>1,000 Birr</strong></div>
+        <div>◉ Minimum withdrawal: <strong>200 Birr</strong></div>
+        <div>◉ Withdrawal fee: <strong>20%</strong></div>
+        <div>◉ Withdrawal hours: <strong>9:00 AM – 6:00 PM</strong></div>
+        <div>◉ Working days: <strong>Monday – Saturday</strong> (No Sundays)</div>
+        <div>◉ Invitation reward: <strong>10% · 2% · 1%</strong></div>
+        <div>◉ Team commission: <strong>5% · 2% · 1%</strong></div>
+        <div>◉ Withdrawal processing time: <strong>within 24 hours</strong></div>
+        <div>◉ The company offers both <strong>weekly &amp; monthly</strong> salaries</div>
+      </div>
+    </div>
+
+    <!-- Fee preview -->
+    <div style="background:#E8F5EE;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none;" id="fee-preview">
+      <div style="font-size:12px;color:var(--muted);font-weight:600;">💰 Fee Breakdown</div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:13px;">
+        <span>Amount entered</span><span id="fp-amt" style="font-weight:700;">0 Birr</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:13px;">
+        <span>Fee (20%)</span><span id="fp-fee" style="font-weight:700;color:var(--red);">- 0 Birr</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:14px;border-top:1.5px solid var(--border);padding-top:6px;">
+        <span style="font-weight:800;">You receive</span><span id="fp-net" style="font-weight:800;color:var(--green);">0 Birr</span>
+      </div>
+    </div>
+
+    <div class="fg"><label class="fl">Amount (Birr)</label>
+      <input class="fi" type="number" id="wamt" placeholder="Minimum 200 Birr" oninput="calcFee(this.value)"/>
+    </div>
+    <div class="fg"><label class="fl">Your Account Number</label><input class="fi" type="text" id="wacct" placeholder="Telebirr or bank account number"/></div>
+    <div class="fg"><label class="fl">Bank / Method</label>
+      <select class="fi" id="wbank"><option>Telebirr</option><option>CBE</option><option>Hello Cash</option><option>Amhara Bank</option><option>Awash Bank</option></select>
+    </div>
+    <div class="fg"><label class="fl">Account Holder Name</label><input class="fi" type="text" id="wname" placeholder="Full name on account"/></div>
+    <div class="note-box note-warn">⏳ Processed within <strong>24 hours</strong>. Working days: Mon–Sat only.</div>
+    <button class="sbtn amber" onclick="subWit()">✅ Request Withdrawal</button>
+  </div>
+</div>
+
+<!-- INVEST -->
+<div class="mo" id="im" onclick="cmo(event,'im')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('im')">✕</button>
+    <div class="mtitle">🌱 Investment Plans</div>
+    <!-- Package table -->
+    <div style="overflow-x:auto;margin-bottom:16px;border-radius:14px;border:1.5px solid var(--border);">
+      <table style="width:100%;border-collapse:collapse;min-width:420px;">
+        <thead>
+          <tr style="background:var(--green);">
+            <th style="padding:10px 10px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Name</th>
+            <th style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Price</th>
+            <th style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Income</th>
+            <th style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Revenue</th>
+            <th style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Period</th>
+            <th style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-align:center;letter-spacing:.5px;">Limit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="pkg-row" data-pkg="amd1" onclick="selectPkg('amd1',this)" style="cursor:pointer;border-bottom:1px solid var(--border);">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD1</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">1,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">75</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">2,200</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">30</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">One</td>
+          </tr>
+          <tr class="pkg-row" data-pkg="amd2" onclick="selectPkg('amd2',this)" style="cursor:pointer;border-bottom:1px solid var(--border);background:#FAFAF7;">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD2</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">2,500</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">110</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">5,060</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">46</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">Two</td>
+          </tr>
+          <tr class="pkg-row" data-pkg="amd3" onclick="selectPkg('amd3',this)" style="cursor:pointer;border-bottom:1px solid var(--border);">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD3</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">6,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">270</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">12,150</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">45</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">Three</td>
+          </tr>
+          <tr class="pkg-row" data-pkg="amd4" onclick="selectPkg('amd4',this)" style="cursor:pointer;border-bottom:1px solid var(--border);background:#FAFAF7;">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD4</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">15,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">700</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">30,100</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">43</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">Three</td>
+          </tr>
+          <tr class="pkg-row" data-pkg="amd5" onclick="selectPkg('amd5',this)" style="cursor:pointer;border-bottom:1px solid var(--border);">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD5</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">31,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">1,100</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">66,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">60</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">Four</td>
+          </tr>
+          <tr class="pkg-row" data-pkg="amd6" onclick="selectPkg('amd6',this)" style="cursor:pointer;background:#F0FFF4;">
+            <td style="padding:11px 10px;font-weight:800;font-size:13px;text-align:center;color:var(--green);">AMD6</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">64,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--amber);">2,200</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;font-weight:700;color:var(--green);">132,000</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">60</td>
+            <td style="padding:11px 8px;font-size:13px;text-align:center;">Five</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Selected package detail card -->
+    <div id="pkg-detail" style="display:none;background:var(--green);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span id="pd-name" style="color:#fff;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;"></span>
+        <span id="pd-limit" style="background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700;"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="color:rgba(255,255,255,.7);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Price</div>
+          <div id="pd-price" style="color:#fff;font-size:14px;font-weight:800;margin-top:4px;"></div>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="color:rgba(255,255,255,.7);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Income/Day</div>
+          <div id="pd-income" style="color:#FFD700;font-size:14px;font-weight:800;margin-top:4px;"></div>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="color:rgba(255,255,255,.7);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Revenue</div>
+          <div id="pd-revenue" style="color:#90EE90;font-size:14px;font-weight:800;margin-top:4px;"></div>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="color:rgba(255,255,255,.7);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Period</div>
+          <div id="pd-period" style="color:#fff;font-size:14px;font-weight:800;margin-top:4px;"></div>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="ipkg" value=""/>
+    <div class="fg"><label class="fl">Amount (Birr)</label><input class="fi" type="number" id="iamt" placeholder="Select a package above first"/></div>
+    <button class="sbtn" onclick="subInv()">🌱 Activate Plan</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="mo" id="pm" onclick="cmo(event,'pm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('pm')">✕</button>
+    <div class="mtitle">👤 Edit Profile</div>
+    <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" id="pname"/></div>
+    <div class="fg"><label class="fl">Phone (read only)</label><input class="fi" type="tel" id="pphone" readonly style="opacity:.6;"/></div>
+    <button class="sbtn" onclick="savePro()">Save Changes</button>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="mo" id="scm" onclick="cmo(event,'scm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('scm')">✕</button>
+    <div class="mtitle">🔒 Change Password</div>
+    <div class="fg"><label class="fl">Current Password</label><input class="fi" type="password" id="cpw"/></div>
+    <div class="fg"><label class="fl">New Password</label><input class="fi" type="password" id="npw" placeholder="Min 6 characters"/></div>
+    <div class="fg"><label class="fl">Confirm New Password</label><input class="fi" type="password" id="cnpw"/></div>
+    <button class="sbtn" onclick="chPw()">Update Password</button>
+  </div>
+</div>
+
+<!-- BANK -->
+<div class="mo" id="bkm" onclick="cmo(event,'bkm')">
+  <div class="msheet"><div class="mhandle"></div><button class="mclose" onclick="cm('bkm')">✕</button>
+    <div class="mtitle">💳 Bank Account</div>
+    <div class="fg"><label class="fl">Account Number</label><input class="fi" type="text" id="bknum"/></div>
+    <div class="fg"><label class="fl">Bank Name</label><select class="fi" id="bkbank"><option>Telebirr</option><option>CBE</option><option>Hello Cash</option><option>Amhara Bank</option><option>Awash Bank</option></select></div>
+    <div class="fg"><label class="fl">Account Holder Name</label><input class="fi" type="text" id="bkholder"/></div>
+    <button class="sbtn" onclick="saveBk()">Save Account</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE (localStorage cache) ──
+const S={g:k=>{try{return JSON.parse(localStorage.getItem('av4_'+k));}catch{return null;}},s:(k,v)=>localStorage.setItem('av4_'+k,JSON.stringify(v)),d:k=>localStorage.removeItem('av4_'+k)};
+
+// ═══════════════════════════════════════════════
+// FIREBASE REFERRAL SYSTEM — FINAL VERSION
+// ═══════════════════════════════════════════════
+const FB = 'https://agrovest-app-68bce-default-rtdb.firebaseio.com';
+
+// ── Write referral when B registers via A's link ──
+async function fbPushReferral(referrerId, newUser) {
+  if (!referrerId || !newUser || !newUser.uid) return;
+  const entry = {
+    uid: newUser.uid,
+    name: newUser.name || '',
+    phone: newUser.phone || '',
+    ip: newUser.ip || '',
+    ts: Date.now()
+  };
+  // Write to /byref/REFERRER_ID/NEW_USER_UID
+  for (var i = 0; i < 5; i++) {
+    try {
+      const r = await fetch(FB + '/byref/' + referrerId + '/' + newUser.uid + '.json', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      if (r.ok) { console.log('[REF] Saved:', referrerId, '←', newUser.uid); return; }
+    } catch (e) { console.log('[REF] Retry', i + 1, e.message); }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+
+// ── Save user to Firebase (called on register + every login) ──
+async function fbPushUser(u) {
+  if (!u || !u.uid) return;
+  try {
+    await fetch(FB + '/allusers/' + u.uid + '.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: u.uid,
+        name: u.name || '',
+        phone: u.phone || '',
+        refBy: u.refBy || u.ref || '',
+        ip: u.ip || '',
+        ts: Date.now()
+      })
+    });
+  } catch (e) {}
+}
+async function fbSaveUser(u) { fbPushUser(u); }
+
+async function fbGetUser(uid) {
+  try {
+    const r = await fetch(FB + '/allusers/' + uid + '.json');
+    if (r.ok) { const d = await r.json(); return (d && d.uid) ? d : null; }
+  } catch (e) {}
+  return null;
+}
+
+// ── SYNC: get all referrals for current user ──
+async function fbSyncMyReferrals() {
+  const u = window._u;
+  if (!u || !u.uid) return;
+
+  const allRefs = {};
+
+  // PRIMARY: read /byref/MY_UID and /byref/MY_PHONE
+  for(const key of [u.uid, u.phone]){
+    if(!key)continue;
+    try {
+      const r = await fetch(FB + '/byref/' + key + '.json');
+      if (r.ok) {
+        const d = await r.json();
+        if (d && typeof d === 'object') {
+          Object.values(d).forEach(v => {
+            if (v && v.uid && v.uid !== u.uid) allRefs[v.uid] = v;
+          });
+        }
+      }
+    } catch (e) { console.log('[SYNC] byref error:', e.message); }
+  }
+
+  // BACKUP: scan /allusers for refBy = MY_UID
+  try {
+    const r = await fetch(FB + '/allusers.json');
+    if (r.ok) {
+      const d = await r.json();
+      if (d && typeof d === 'object') {
+        Object.values(d).forEach(v => {
+          if (v && v.uid && v.uid !== u.uid && (v.refBy === u.uid || v.ref === u.uid)) {
+            if (!allRefs[v.uid]) allRefs[v.uid] = { uid: v.uid, name: v.name || '', phone: v.phone || '', ip: v.ip || '', ts: v.ts || Date.now() };
+          }
+        });
+      }
+    }
+  } catch (e) { console.log('[SYNC] allusers error:', e.message); }
+
+  const refs = Object.values(allRefs);
+
+  if (!refs.length) {
+    toast('ℹ️ No referrals yet — share your link!');
+    renderMyReferrals();
+    return;
+  }
+
+  const us = S.g('users') || {};
+  const me = us[u.uid];
+  if (!me) return;
+  me.referrals = me.referrals || [];
+
+  const knownKey = 'av4_kr_' + u.uid;
+  const known = new Set(JSON.parse(localStorage.getItem(knownKey) || '[]'));
+  let added = 0;
+
+  refs.forEach(ref => {
+    if (!ref.uid || known.has(ref.uid) || ref.uid === u.uid) return;
+    known.add(ref.uid);
+    const dt = new Date(ref.ts || Date.now()).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    me.referrals.push({ uid: ref.uid, name: ref.name || 'Friend', phone: ref.phone || '', ip: ref.ip || '', joined: dt, bonus: 50 });
+    me.confirmed = (me.confirmed || 0) + 1;
+    me.invited = (me.invited || 0) + 1;
+    me.earnedRefs = (me.earnedRefs || 0) + 50;
+    me.balance = (me.balance || 0) + 50;
+    me.txns = me.txns || [];
+    me.txns.unshift({ id: 'rf' + Date.now() + '_' + ref.uid.slice(-4), type: 'referral', amt: 50, desc: '🔗 Referral — ' + (ref.name || 'Friend') + ' (' + (ref.phone || '') + ')', status: 'approved', date: dt });
+    added++;
+  });
+
+  us[u.uid] = me;
+  S.s('users', us);
+  localStorage.setItem(knownKey, JSON.stringify([...known]));
+  window._u = me;
+  fbPushUser(me);
+  updBal(me.balance);
+  fillUI();
+  refreshTasks();
+  renderTx();
+  renderMyReferrals();
+
+  if (added > 0) {
+    toast('🎉 ' + added + ' new referral' + (added > 1 ? 's' : '') + '! +' + (added * 50) + ' Birr credited!');
+  } else {
+    toast('✅ ' + refs.length + ' referral' + (refs.length !== 1 ? 's' : '') + ' total — all counted!');
+  }
+}
+
+// Auto-sync every 60 seconds
+setInterval(function () { if (window._u) fbSyncMyReferrals(); }, 60000);
+
+// ═══════════════════════════════════════════════
+// REAL-TIME LISTENER — Firebase EventSource (SSE)
+// When admin approves → user phone updates INSTANTLY
+// ═══════════════════════════════════════════════
+var _rtListener = null;
+
+function startRealTimeListener(uid) {
+  if (!uid) return;
+  // Stop any existing listener
+  if (_rtListener) { try { _rtListener.close(); } catch(e){} }
+
+  // Listen to notifications/UID in real-time using Firebase SSE
+  var url = FB + '/notifications/' + uid + '.json';
+  try {
+    _rtListener = new EventSource(url);
+    _rtListener.addEventListener('put', function(e) {
+      try {
+        var data = JSON.parse(e.data);
+        if (data && data.data && typeof data.data === 'object') {
+          var u = window._u;
+          if (u && u.uid === uid) {
+            checkNotifications(u);
+          }
+        }
+      } catch(err) {}
+    });
+    _rtListener.addEventListener('patch', function(e) {
+      try {
+        var u = window._u;
+        if (u && u.uid === uid) checkNotifications(u);
+      } catch(err) {}
+    });
+    _rtListener.onerror = function() {
+      // Fallback to polling every 10 seconds if SSE fails
+      if (_rtListener) { _rtListener.close(); _rtListener = null; }
+      setTimeout(function() { if (window._u) startRealTimeListener(window._u.uid); }, 10000);
+    };
+    console.log('[RT] Real-time listener started for', uid);
+  } catch(e) {
+    console.log('[RT] SSE not supported, using polling');
+    // Fallback: poll every 10 seconds
+    setInterval(function() {
+      var u = window._u;
+      if (u && u.uid === uid) checkNotifications(u);
+    }, 10000);
+  }
+}
+
+// Also poll every 10 seconds as backup (catches missed SSE events)
+setInterval(function() {
+  var u = window._u;
+  if (u) checkNotifications(u);
+}, 10000);
+
+
+
+
+function genId(){return 'AGV-'+Math.random().toString(36).substr(2,6).toUpperCase();}
+function getBase(){return window.location.origin+window.location.pathname.replace(/\/$/,'').replace(/index\.html$/,'');}
+function urlP(p){return new URLSearchParams(window.location.search).get(p);}
+function nowStr(){return new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function todayStr(){return new Date().toDateString();}
+
+// ── INIT ──
+window.onload=function(){
+  setTimeout(()=>{const L=document.getElementById('loading');L.style.opacity='0';setTimeout(()=>L.style.display='none',400);},1000);
+  const ref=urlP('ref');
+  // ── Persist ref code in sessionStorage so it survives navigation ──
+  if(ref){
+    sessionStorage.setItem('agv_ref',ref);
+    document.getElementById('rref').value=ref;
+  } else {
+    const savedRef=sessionStorage.getItem('agv_ref');
+    if(savedRef&&document.getElementById('rref'))
+      document.getElementById('rref').value=savedRef;
+  }
+  const sess=S.g('sess');
+  if(sess){const u=getU(sess);if(u){loadApp(u);return;}else S.d('sess');}
+  showPage(ref||sessionStorage.getItem('agv_ref')?'pg-reg':'pg-login');
+};
+
+function showPage(id){
+  ['pg-reg','pg-login','pg-succ'].forEach(p=>{const el=document.getElementById(p);if(el)el.classList.remove('show');});
+  const t=document.getElementById(id);if(t)t.classList.add('show');
+}
+
+function getU(uid){const us=S.g('users')||{};return us[uid]||null;}
+
+// ── FETCH USER FROM FIREBASE (cross-device) ──
+async function fbGetUser(uid){
+  try{
+    const r=await fetch(FB+'/allusers/'+uid+'.json');
+    if(!r.ok)return null;
+    const data=await r.json();
+    return data||null;
+  }catch(e){return null;}
+}
+
+// ── SAVE USER TO FIREBASE ──
+async function fbSaveUser(u){
+  try{
+    await fetch(FB+'/allusers/'+u.uid+'.json',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(u)
+    });
+  }catch(e){console.log('fbSaveUser fail:',e);}
+}
+function saveU(u){
+  const us=S.g('users')||{};us[u.uid]=u;S.s('users',us);
+  // Also save to Firebase for cross-device access
+  fbSaveUser(u);
+}
+
+// ── GET IP ADDRESS ──
+async function getIP(){
+  try{
+    const r=await fetch('https://api.ipify.org?format=json');
+    const d=await r.json();
+    return d.ip||'unknown';
+  }catch{return 'unknown';}
+}
+
+// ── REGISTER ──
+async function doReg(){
+  const name=document.getElementById('rn').value.trim();
+  const phone=document.getElementById('rp').value.trim();
+  const pass=document.getElementById('rpw').value;
+  const pass2=document.getElementById('rpw2').value;
+  // Try saved ref from sessionStorage too
+  const ref=(document.getElementById('rref').value.trim())||sessionStorage.getItem('agv_ref')||'';
+  if(!name){toast('⚠️ Enter your full name');return;}
+  if(!phone||phone.length<7){toast('⚠️ Enter a valid phone number');return;}
+  if(!pass||pass.length<6){toast('⚠️ Password must be at least 6 characters');return;}
+  if(pass!==pass2){toast('⚠️ Passwords do not match');return;}
+  const us=S.g('users')||{};
+  if(Object.values(us).find(u=>u.phone===phone)){toast('⚠️ This phone is already registered. Please sign in.');return;}
+
+  // ── Check Firebase for duplicate phone across ALL devices ──
+  const regBtn=document.querySelector('[onclick*="doReg"]')||document.querySelector('.sbtn');
+  if(regBtn){regBtn.disabled=true;regBtn.textContent='⏳ Checking...';}
+  try{
+    const fbCheck=await fetch(FB+'/allusers.json');
+    if(fbCheck.ok){
+      const allUsers=await fbCheck.json();
+      if(allUsers&&typeof allUsers==='object'){
+        const exists=Object.values(allUsers).find(u=>u.phone===phone);
+        if(exists){
+          if(regBtn){regBtn.disabled=false;regBtn.textContent='Sign Up';}
+          toast('⚠️ This phone number is already registered. Please sign in.');
+          return;
+        }
+      }
+    }
+  }catch(e){console.log('Phone check fail:',e);}
+  if(regBtn){regBtn.disabled=false;regBtn.textContent='Sign Up';}
+  // Get IP address
+  const ip=await getIP();
+  const uid=genId();
+  const now=Date.now();
+  const u={
+    uid,name,phone,pass,
+    balance:50,
+    ref:ref||null,
+    refBy:ref||null,
+    joined:now,
+    joinedDate:nowStr(),
+    ip:ip,
+    invited:0,confirmed:0,earnedRefs:0,
+    tasks:{},checkins:[],plans:0,todayEarned:0,
+    txns:[{id:'w1',type:'bonus',amt:50,desc:'🎁 Welcome Bonus',status:'approved',date:nowStr()}],
+    bankAccount:null,
+    activePlans:[]
+  };
+  let refOk=false;
+  if(ref){
+    const r=Object.values(us).find(x=>x.uid===ref||x.phone===ref);
+    if(r){
+      // Referrer IS on this same device — credit immediately
+      r.balance=(r.balance||0)+50;
+      r.invited=(r.invited||0)+1;
+      r.confirmed=(r.confirmed||0)+1;
+      r.earnedRefs=(r.earnedRefs||0)+50;
+      r.txns=r.txns||[];
+      r.txns.unshift({
+        id:'rf'+Date.now(),type:'referral',amt:50,
+        desc:'🔗 Referral Bonus — '+name+' ('+phone+')',
+        status:'approved',date:nowStr(),
+        refUid:uid,refName:name,refPhone:phone,refIP:ip
+      });
+      r.referrals=r.referrals||[];
+      r.referrals.push({uid,name,phone,ip,joined:nowStr(),bonus:50});
+      us[r.uid]=r;
+      refOk=true;
+    }
+    // ── ALWAYS push to Firebase — referrer will sync from their phone ──
+    // Even if referrer not on this device, Firebase saves it for them
+    // Push referral using phone AND uid as keys (works across deployments)
+    const referrerPhone=(r?r.phone:null)||ref;
+    fbPushReferral(referrerPhone, {uid,name,phone,ip});
+    fbPushReferral(ref, {uid,name,phone,ip});
+  }
+  us[uid]=u;
+  fbPushUser(u);
+  // Also save full user to allusers for cross-device login
+  fbSaveUser(u);
+  S.s('users',us);
+  S.s('sess',uid);
+  sessionStorage.removeItem('agv_ref');
+  showPage('pg-succ');
+  // Always show success — referrer will be credited via Firebase sync
+  document.getElementById('ref-ok').style.display=ref?'block':'none';
+}
+
+// ── LOGIN ──
+async function doLog(){
+  const phone=document.getElementById('lp').value.trim();
+  const pass=document.getElementById('lpw').value;
+  if(!phone||!pass){toast('⚠️ Fill in all fields');return;}
+  
+  // First check localStorage
+  let us=S.g('users')||{};
+  let u=Object.values(us).find(x=>x.phone===phone&&x.pass===pass);
+  
+  if(!u){
+    // Not found locally — try Firebase
+    toast('🔍 Checking server...');
+    try{
+      const r=await fetch(FB+'/allusers.json?orderBy="phone"&equalTo="'+phone+'"');
+      if(r.ok){
+        const data=await r.json();
+        if(data&&typeof data==='object'){
+          const found=Object.values(data).find(x=>x.phone===phone&&x.pass===pass);
+          if(found){
+            // Save to localStorage for future use
+            us[found.uid]=found;
+            S.s('users',us);
+            u=found;
+          }
+        }
+      }
+    }catch(e){console.log('FB login fail:',e);}
+  }
+  
+  if(!u){toast('❌ Wrong phone or password');return;}
+  S.s('sess',u.uid);loadApp(u);
+}
+function enterApp(){loadApp(getU(S.g('sess')));}
+
+// ── LOAD APP ──
+async function loadApp(u){
+  ['pg-reg','pg-login','pg-succ'].forEach(p=>{const el=document.getElementById(p);if(el)el.classList.remove('show');});
+  document.getElementById('app').classList.add('show');
+  // Load fresh from localStorage
+  let fresh=getU(u.uid);
+  // Also try to get latest from Firebase (has cross-device data)
+  try{
+    const fbUser=await fbGetUser(u.uid);
+    if(fbUser&&fbUser.uid){
+      // Merge: take higher balance and more referrals
+      if(fresh){
+        if((fbUser.confirmed||0)>(fresh.confirmed||0)) fresh.confirmed=fbUser.confirmed;
+        if((fbUser.invited||0)>(fresh.invited||0)) fresh.invited=fbUser.invited;
+        if((fbUser.earnedRefs||0)>(fresh.earnedRefs||0)) fresh.earnedRefs=fbUser.earnedRefs;
+        if((fbUser.referrals||[]).length>(fresh.referrals||[]).length) fresh.referrals=fbUser.referrals;
+        saveU(fresh);
+      } else {
+        fresh=fbUser;
+        const us=S.g('users')||{};us[u.uid]=fresh;S.s('users',us);
+      }
+    }
+  }catch(e){console.log('loadApp FB fetch fail:',e);}
+  window._u=fresh||u;
+  fillUI();buildCal();renderTx();refreshTasks();
+  const cu=window._u;
+  if(cu){
+    fbPushUser(cu);
+    if(cu.refBy||cu.ref){
+      fbPushReferral(cu.refBy||cu.ref,{uid:cu.uid,name:cu.name,phone:cu.phone,ip:cu.ip||''});
+    }
+    // Check for admin approvals and credit balance automatically
+    checkNotifications(cu);
+    // Start real-time listener — updates balance the MOMENT admin approves
+    startRealTimeListener(cu.uid);
+  }
+  setTimeout(function(){fbSyncMyReferrals();},2000);
+}
+
+// ── CHECK NOTIFICATIONS — apply admin approvals to user's balance ──
+async function checkNotifications(u){
+  if(!u||!u.uid)return;
+  try{
+    const r=await fetch(FB+'/notifications/'+u.uid+'.json');
+    if(!r.ok)return;
+    const notifs=await r.json();
+    if(!notifs||typeof notifs!=='object')return;
+    const us=S.g('users')||{};
+    const me=us[u.uid];if(!me)return;
+    const doneKey='av4_dn_'+u.uid;
+    const done=new Set(JSON.parse(localStorage.getItem(doneKey)||'[]'));
+    let updated=false;
+    Object.entries(notifs).forEach(function([nid,n]){
+      if(!n||done.has(nid))return;
+      done.add(nid);
+      if(n.type==='deposit_approved'){
+        me.balance=(me.balance||0)+n.amt;
+        me.hasRecharged=true;
+        me.txns=me.txns||[];
+        const tx=me.txns.find(function(t){return t.type==='deposit'&&t.status==='pending';});
+        if(tx){tx.status='approved';}
+        else{me.txns.unshift({id:n.depId||nid,type:'deposit',amt:n.amt,desc:'⬇️ Recharge approved!',status:'approved',date:n.date||nowStr()});}
+        updated=true;
+        setTimeout(function(){toast('🎉 Your recharge of '+n.amt.toLocaleString()+' Birr has been approved!');},800);
+      }
+      if(n.type==='commission'){
+        me.balance=(me.balance||0)+n.amt;
+        me.earnedRefs=(me.earnedRefs||0)+n.amt;
+        me.txns=me.txns||[];
+        me.txns.unshift({id:nid,type:'referral',amt:n.amt,desc:'💰 Commission — '+n.from,status:'approved',date:nowStr()});
+        updated=true;
+      }
+    });
+    if(updated){
+      us[u.uid]=me;S.s('users',us);
+      localStorage.setItem(doneKey,JSON.stringify([...done]));
+      window._u=me;updBal(me.balance);fillUI();renderTx();
+    } else {
+      localStorage.setItem(doneKey,JSON.stringify([...done]));
+    }
+  }catch(e){console.log('notif fail:',e);}
+}
+
+function fillUI(){
+  // Always re-read from storage to get latest referral counts
+  const stored=getU(S.g('sess'));
+  if(stored)window._u=stored;
+  const u=window._u;if(!u)return;
+  updBal(u.balance);
+  document.getElementById('mname').textContent=u.name;
+  document.getElementById('muid').textContent='ID: '+u.uid;
+  document.getElementById('is-i').textContent=u.invited||0;
+  document.getElementById('is-c').textContent=u.confirmed||0;
+  document.getElementById('is-e').textContent=u.earnedRefs||0;
+  document.getElementById('s-refs').textContent=u.confirmed||0;
+  document.getElementById('s-plans').textContent=u.plans||0;
+  document.getElementById('pname').value=u.name;
+  document.getElementById('pphone').value=u.phone;
+  if(u.bankAccount){document.getElementById('bknum').value=u.bankAccount.number||'';document.getElementById('bkholder').value=u.bankAccount.holder||'';}
+  document.getElementById('mylink').textContent=getBase()+'?ref='+u.phone;
+  const bal=u.balance||0;
+  const lv=bal>=5000?'Level 4 · VIP 💎':bal>=1000?'Level 3 · Gold 🥇':bal>=500?'Level 2 · Silver ⚪':'Level 1 · Starter 🌱';
+  document.getElementById('mlvt').textContent=lv;
+  renderMyReferrals();
+}
+
+function updBal(b){
+  const f=Math.round(b||0).toLocaleString();
+  document.getElementById('hbal').textContent=f+' Birr';
+  document.getElementById('wbal').textContent=f+' Birr';
+  const sub=b>50?'Today\'s earnings growing! 📈':'Complete tasks to earn more! ✅';
+  document.getElementById('hbal-sub').textContent=sub;
+}
+
+// ── TRANSACTIONS ──
+function renderTx(){
+  const u=window._u;if(!u)return;
+  const list=document.getElementById('txlist');
+  const tx=u.txns||[];
+  if(!tx.length){list.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No transactions yet</p>';return;}
+  const isIn=t=>['bonus','referral','task','checkin','deposit'].includes(t);
+  list.innerHTML=tx.slice(0,30).map(t=>{
+    const cls=t.status==='pending'?'pend':isIn(t.type)?'in':'out';
+    const ico=t.status==='pending'?'⏳':isIn(t.type)?'⬇️':'⬆️';
+    const sign=isIn(t.type)?'+':'−';
+    const badge=t.status&&t.status!=='approved'?`<div class="tx-badge ${t.status}">${t.status}</div>`:'';
+    return`<div class="tx-item"><div class="tx-ico ${cls}">${ico}</div><div class="tx-det"><div class="tx-name">${t.desc}</div><div class="tx-date">${t.date}</div>${badge}</div><div class="tx-amt ${cls}">${sign}${Math.round(t.amt||0)}</div></div>`;
+  }).join('');
+}
+function addTx(type,amt,desc,status='approved'){
+  const u=window._u;if(!u)return;
+  u.txns=u.txns||[];u.txns.unshift({id:'t'+Date.now(),type,amt,desc,status,date:nowStr()});
+  saveU(u);renderTx();
+}
+
+// ── RECHARGE 2-STEP ──
+function selectBank(name, ico, color, minmax){
+  document.getElementById('dep-step1').style.display='none';
+  document.getElementById('dep-step2').style.display='block';
+  document.getElementById('dmeth').value=name;
+  document.getElementById('dep-bank-name').textContent=name;
+  document.getElementById('dep-bank-ico').textContent=ico;
+  document.getElementById('dep-bank-ico').style.background='linear-gradient(135deg,'+color+','+color+'99)';
+  document.getElementById('dep-minmax').textContent=minmax;
+  // show balance
+  const u=window._u;
+  if(u)document.getElementById('dep-bal-show').textContent=Math.round(u.balance||0).toLocaleString()+' ETB';
+}
+function depBack(){
+  document.getElementById('dep-step1').style.display='block';
+  document.getElementById('dep-step2').style.display='none';
+  document.getElementById('damt').value='';
+  document.getElementById('dref').value='';
+}
+function openDep(){
+  // reset to step 1
+  document.getElementById('dep-step1').style.display='block';
+  document.getElementById('dep-step2').style.display='none';
+  document.getElementById('damt').value='';
+  document.getElementById('dref').value='';
+  const u=window._u;
+  if(u)document.getElementById('dep-bal-show').textContent=Math.round(u.balance||0).toLocaleString()+' ETB';
+  om('dm');
+}
+
+// ── RECHARGE ──
+function subDep(){
+  const amt=parseFloat(document.getElementById('damt').value);
+  const meth=document.getElementById('dmeth').value;
+  const ref=document.getElementById('dref').value.trim();
+  if(!meth){toast('⚠️ Please select a payment method first');return;}
+  if(!amt||amt<1000){toast('⚠️ Minimum recharge: 1,000 Birr');return;}
+  if(!ref){toast('⚠️ Enter your name or transaction reference');return;}
+  const reqs=S.g('deposits')||[];
+  const u=window._u;
+  const dep={uid:u.uid,name:u.name,phone:u.phone,amt,meth,ref,status:'pending',date:nowStr(),id:'d'+Date.now()};
+  reqs.unshift(dep);
+  S.s('deposits',reqs);
+  // ── Push to Firebase so admin sees it from any device ──
+  fetch(FB+'/deposits/'+dep.id+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(dep)}).catch(e=>console.log('dep push fail',e));
+  addTx('deposit',amt,'⬇️ Recharge — '+meth+' ('+ref+')','pending');
+  // ── Auto-complete dep1 task on first recharge submit ──
+  if(!u.tasks['dep1']){
+    u.tasks['dep1']=true;u.balance=(u.balance||0)+30;updBal(u.balance);
+    saveU(u);addTx('task',30,'✅ Task: First Recharge Bonus');
+    setTimeout(()=>toast('🎁 +30 Birr First Recharge bonus! 🎉'),1500);
+  }
+  cm('dm');
+  document.getElementById('dep-step1').style.display='block';
+  document.getElementById('dep-step2').style.display='none';
+  document.getElementById('damt').value='';document.getElementById('dref').value='';
+  toast('✅ Recharge request sent! Admin will credit within 1–2 hours.');
+}
+
+// ── WITHDRAW ──
+function subWit(){
+  const amt=parseFloat(document.getElementById('wamt').value);
+  const acct=document.getElementById('wacct').value.trim();
+  const bank=document.getElementById('wbank').value;
+  const wname=document.getElementById('wname').value.trim();
+  const u=window._u;
+  // ── Rule: Sunday block ──
+  const day=new Date().getDay();
+  if(day===0){toast('⚠️ No withdrawals on Sunday. Come back Monday!');return;}
+  // ── Rule: Time check 10am–6pm ──
+  const hr=new Date().getHours();
+  if(hr<10||hr>=18){toast('⚠️ Withdrawals accepted 10:00 AM – 6:00 PM only.');return;}
+  // ── Rule: Must have active plan ──
+  const hasActivePlan=(u.activePlans||[]).some(p=>p.status==='active');
+  if(!hasActivePlan){toast('⚠️ You must have an active product plan to withdraw.');return;}
+  // ── Rule: One withdrawal per day ──
+  const lastWit=u.lastWithdrawDay;
+  if(lastWit===todayStr()){toast('⚠️ Only one withdrawal per day is allowed.');return;}
+  if(!amt||amt<200){toast('⚠️ Minimum withdrawal: 200 Birr');return;}
+  if(!acct){toast('⚠️ Enter your account number');return;}
+  if(!wname){toast('⚠️ Enter account holder name');return;}
+  if(amt>(u.balance||0)){toast('⚠️ Insufficient balance — you have '+Math.round(u.balance||0)+' Birr');return;}
+  // ── 20% fee deduction ──
+  const fee=Math.round(amt*0.20);
+  const net=amt-fee;
+  u.balance-=amt;
+  u.lastWithdrawDay=todayStr();
+  updBal(u.balance);saveU(u);
+  const reqs=S.g('withdrawals')||[];
+  const wit={uid:u.uid,name:u.name,phone:u.phone,amt,fee,net,bank,acct,wname,status:'pending',date:nowStr(),id:'w'+Date.now()};
+  reqs.unshift(wit);
+  S.s('withdrawals',reqs);
+  // ── Push to Firebase so admin sees from any device ──
+  fetch(FB+'/withdrawals/'+wit.id+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(wit)}).catch(e=>console.log('wit push fail',e));
+  addTx('withdrawal',amt,'⬆️ Withdrawal — '+bank+' · Net: '+net+' Birr (fee: '+fee+' Birr)','pending');
+  cm('wm');
+  document.getElementById('wamt').value='';document.getElementById('wacct').value='';document.getElementById('wname').value='';
+  document.getElementById('fee-preview').style.display='none';
+  toast('✅ Request sent! You will receive '+net+' Birr within 24 hours.');
+}
+
+// ── FEE PREVIEW ──
+function calcFee(val){
+  const amt=parseFloat(val)||0;
+  const preview=document.getElementById('fee-preview');
+  if(amt>=200){
+    const fee=Math.round(amt*0.20);
+    const net=amt-fee;
+    document.getElementById('fp-amt').textContent=amt.toLocaleString()+' Birr';
+    document.getElementById('fp-fee').textContent='− '+fee.toLocaleString()+' Birr';
+    document.getElementById('fp-net').textContent=net.toLocaleString()+' Birr';
+    preview.style.display='block';
+  } else {
+    preview.style.display='none';
+  }
+}
+
+// ── INVEST ──
+const AMD_PKGS={
+  amd1:{name:'AMD1',price:1000,income:75,revenue:2200,period:30,limit:'One'},
+  amd2:{name:'AMD2',price:2500,income:110,revenue:5060,period:46,limit:'Two'},
+  amd3:{name:'AMD3',price:6000,income:270,revenue:12150,period:45,limit:'Three'},
+  amd4:{name:'AMD4',price:15000,income:700,revenue:30100,period:43,limit:'Three'},
+  amd5:{name:'AMD5',price:31000,income:1100,revenue:66000,period:60,limit:'Four'},
+  amd6:{name:'AMD6',price:64000,income:2200,revenue:132000,period:60,limit:'Five'}
+};
+function selectPkg(key,row){
+  document.querySelectorAll('.pkg-row').forEach(r=>r.style.outline='none');
+  row.style.outline='3px solid var(--green)';row.style.outlineOffset='-2px';
+  document.getElementById('ipkg').value=key;
+  const p=AMD_PKGS[key];
+  document.getElementById('pd-name').textContent=p.name;
+  document.getElementById('pd-price').textContent=p.price.toLocaleString();
+  document.getElementById('pd-income').textContent=p.income;
+  document.getElementById('pd-revenue').textContent=p.revenue.toLocaleString();
+  document.getElementById('pd-period').textContent=p.period+' days';
+  document.getElementById('pd-limit').textContent='Limit: '+p.limit;
+  document.getElementById('pkg-detail').style.display='block';
+  document.getElementById('iamt').placeholder='Min '+p.price.toLocaleString()+' Birr · '+p.period+' days';
+  document.getElementById('iamt').min=p.price;
+  toast('✅ '+p.name+' selected — '+p.income+' Birr/day for '+p.period+' days');
+}
+function subInv(){
+  const key=document.getElementById('ipkg').value;
+  const amt=parseFloat(document.getElementById('iamt').value);
+  const u=window._u;
+  if(!key){toast('⚠️ Please select a package from the table above');return;}
+  // ── RULE: Must have recharged ──
+  if(!u.hasRecharged){
+    toast('⚠️ You must recharge first before activating a product!');
+    cm('im');openDep();return;
+  }
+  const p=AMD_PKGS[key];
+  if(!amt||amt<p.price){toast('⚠️ Minimum for '+p.name+': '+p.price.toLocaleString()+' Birr');return;}
+  if(amt>(u.balance||0)){toast('⚠️ Insufficient balance — you have '+Math.round(u.balance||0)+' Birr');return;}
+  u.balance-=amt;
+  u.plans=(u.plans||0)+1;
+  updBal(u.balance);
+  // ── Create active plan ──
+  u.activePlans=u.activePlans||[];
+  const plan={
+    id:'plan_'+Date.now(),
+    pkg:key,
+    name:p.name,
+    price:amt,
+    income:p.income,
+    revenue:p.revenue,
+    period:p.period,
+    daysLeft:p.period,
+    lastClaim:null,
+    claimCount:0,
+    activatedAt:nowStr(),
+    status:'active'
+  };
+  u.activePlans.push(plan);
+  saveU(u);
+  document.getElementById('s-plans').textContent=u.plans;
+  addTx('invest',amt,'🌱 '+p.name+' activated — '+p.income+' Birr/day · '+p.period+' days');
+  cm('im');
+  document.getElementById('iamt').value='';
+  document.getElementById('ipkg').value='';
+  document.getElementById('pkg-detail').style.display='none';
+  document.querySelectorAll('.pkg-row').forEach(r=>r.style.outline='none');
+  toast('🌱 '+p.name+' activated! Earn '+p.income+' Birr/day for '+p.period+' days 🎉');
+  // ── Auto-complete inv1 task on first plan activation ──
+  if(!u.tasks['inv1']){
+    u.tasks['inv1']=true;u.balance=(u.balance||0)+50;updBal(u.balance);
+    saveU(u);addTx('task',50,'✅ Task: First Investment Bonus');
+    setTimeout(()=>toast('🎁 +50 Birr First Investment bonus! 🎉'),1800);
+  }
+  // ── Auto-complete dep1 task if recharge was done (hasRecharged flag) ──
+  if(u.hasRecharged&&!u.tasks['dep1']){
+    u.tasks['dep1']=true;u.balance=(u.balance||0)+30;updBal(u.balance);
+    saveU(u);addTx('task',30,'✅ Task: First Recharge Bonus');
+  }
+  // ── Auto-complete VIP task if AMD5 or AMD6 purchased ──
+  if((key==='amd5'||key==='amd6')&&!u.tasks['vip']){
+    u.tasks['vip']=true;u.balance=(u.balance||0)+500;updBal(u.balance);
+    saveU(u);addTx('task',500,'💎 VIP Upgrade Bonus — '+p.name);
+    setTimeout(()=>toast('💎 +500 Birr VIP Upgrade bonus! 🎉'),2200);
+  }
+  refreshTasks();
+}
+
+// ── RENDER ACTIVE PLANS ──
+function renderPlans(){
+  const u=window._u;if(!u)return;
+  const plans=u.activePlans||[];
+  const el=document.getElementById('plans-list');
+  if(!plans.length){
+    el.innerHTML=`<div class="no-recharge-box">
+      <div class="ico">💼</div>
+      <h4>No Active Plans Yet</h4>
+      <p>${u.hasRecharged?'Go to the home screen and select a product package to activate your first plan.':'You need to recharge your account first, then activate a product plan.'}</p>
+      <button class="sbtn" style="margin-top:14px;max-width:220px;" onclick="sw('home')">${u.hasRecharged?'View Packages':'Recharge Now'}</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML=plans.map(plan=>{
+    const isActive=plan.status==='active';
+    const claimedToday=plan.lastClaim===todayStr();
+    const pct=Math.round(((plan.period-plan.daysLeft)/plan.period)*100);
+    let btnHtml='';
+    if(!isActive){
+      btnHtml=`<button class="claim-btn completed">✅ Plan Completed</button>`;
+    } else if(claimedToday){
+      btnHtml=`<button class="claim-btn claimed">⏳ Come back tomorrow</button>`;
+    } else {
+      btnHtml=`<button class="claim-btn" onclick="claimDaily('${plan.id}')">💰 Claim ${plan.income} Birr Today</button>`;
+    }
+    return`<div class="plan-card">
+      <div class="plan-head">
+        <div class="plan-name">${plan.name}</div>
+        <div class="plan-badge ${isActive?'':'done'}">${isActive?'🟢 Active':'⬜ Completed'}</div>
+      </div>
+      <div class="plan-stats">
+        <div class="plan-stat"><div class="ps-val">${plan.income}</div><div class="ps-lbl">Daily ₿</div></div>
+        <div class="plan-stat"><div class="ps-val">${plan.daysLeft}</div><div class="ps-lbl">Days Left</div></div>
+        <div class="plan-stat"><div class="ps-val">${plan.claimCount}</div><div class="ps-lbl">Times Claimed</div></div>
+        <div class="plan-stat"><div class="ps-val">${(plan.claimCount*plan.income).toLocaleString()}</div><div class="ps-lbl">Earned ₿</div></div>
+      </div>
+      <div class="plan-progress">
+        <div class="prog-row"><span>Progress</span><span>${pct}% · ${plan.period-plan.daysLeft}/${plan.period} days</span></div>
+        <div class="pb"><div class="pf" style="width:${pct}%"></div></div>
+      </div>
+      <div class="plan-claim">
+        ${btnHtml}
+        <div class="claim-info">
+          <span>Activated: ${plan.activatedAt}</span>
+          <span>Total Revenue: ${plan.revenue.toLocaleString()} ₿</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DAILY CLAIM ──
+function claimDaily(pid){
+  const u=window._u;if(!u)return;
+  u.activePlans=u.activePlans||[];
+  const plan=u.activePlans.find(p=>p.id===pid);
+  if(!plan){toast('❌ Plan not found');return;}
+  if(plan.status!=='active'){toast('✅ This plan is already completed');return;}
+  if(plan.lastClaim===todayStr()){toast('⏳ Already claimed today! Come back tomorrow.');return;}
+  // Claim income
+  u.balance=(u.balance||0)+plan.income;
+  u.todayEarned=(u.todayEarned||0)+plan.income;
+  plan.lastClaim=todayStr();
+  plan.claimCount=(plan.claimCount||0)+1;
+  plan.daysLeft=Math.max(0,plan.daysLeft-1);
+  if(plan.daysLeft===0)plan.status='completed';
+  saveU(u);updBal(u.balance);
+  addTx('daily_income',plan.income,'💰 Daily Income — '+plan.name+' (Day '+plan.claimCount+'/'+plan.period+')');
+  renderPlans();
+  toast('💰 +'+plan.income+' Birr claimed! Day '+plan.claimCount+' of '+plan.period+' 🎉');
+  // Refresh task UI after daily claim
+  refreshTasks();
+}
+
+// ── TASKS ──
+function ct(tid,amt,lbl){
+  // Always read fresh from storage
+  const fresh=getU(S.g('sess'));if(fresh)window._u=fresh;
+  let u=window._u;if(!u)return;
+  u.tasks=u.tasks||{};
+  if(u.tasks[tid]){toast('Already claimed! ✅');return;}
+  // ── Special checks ──
+  if(tid==='r3'){
+    if((u.confirmed||0)<3){
+      toast('⚠️ You need 3 confirmed referrals. You have '+(u.confirmed||0)+'/3');
+      refreshTasks();return;
+    }
+  }
+  // ── VIP: Must have AMD5 or AMD6 active plan ──
+  if(tid==='vip'){
+    const hasVip=(u.activePlans||[]).some(p=>p.pkg==='amd5'||p.pkg==='amd6');
+    if(!hasVip){
+      toast('⚠️ You must purchase AMD5 or AMD6 package to claim VIP reward!');
+      return;
+    }
+  }
+  u.balance=(u.balance||0)+amt;u.todayEarned=(u.todayEarned||0)+amt;u.tasks[tid]=true;
+  saveU(u);updBal(u.balance);addTx('task',amt,'✅ Task: '+lbl);
+  const si=document.getElementById('ts-'+tid);const ti=document.getElementById('ti-'+tid);
+  if(si){si.textContent='✓ Done';si.style.background='';si.style.color='';si.classList.add('dn');}
+  if(ti)ti.classList.add('done');
+  refreshTasks();
+  toast('+'+amt+' Birr claimed! 🎉');
+}
+function claimTeam(){
+  const u=window._u;if(!u)return;
+  u.tasks=u.tasks||{};
+  if(u.tasks['team']){toast('Team salary already claimed! ✅');return;}
+  if((u.confirmed||0)<40){toast('⚠️ You need 40 confirmed referrals. You have '+(u.confirmed||0)+'/40');return;}
+  u.tasks['team']=true;u.balance=(u.balance||0)+500;u.todayEarned=(u.todayEarned||0)+500;
+  saveU(u);updBal(u.balance);
+  addTx('task',500,'🏆 Team Salary Bonus — 40 Members');
+  const si=document.getElementById('ts-team');const ti=document.getElementById('ti-team');
+  if(si){si.textContent='✓ Done';si.classList.add('dn');}if(ti)ti.classList.add('done');
+  toast('🏆 Team salary +500 Birr! Congratulations! 🎉');
+}
+function refreshTasks(){
+  const u=window._u;if(!u)return;
+  // ── Re-read latest user data from storage (friends may have registered) ──
+  const fresh=getU(u.uid);
+  if(fresh){
+    window._u=fresh;
+    fresh.tasks=fresh.tasks||{};
+    // sync confirmed count to UI
+    document.getElementById('is-c').textContent=fresh.confirmed||0;
+    document.getElementById('s-refs').textContent=fresh.confirmed||0;
+  }
+  const cu=window._u;
+  cu.tasks=cu.tasks||{};
+  ['tg','fb','vid','shr','ig','r3','dep1','inv1','vip','team'].forEach(id=>{
+    if(cu.tasks[id]){const si=document.getElementById('ts-'+id);const ti=document.getElementById('ti-'+id);if(si){si.textContent='✓ Done';si.classList.add('dn');}if(ti)ti.classList.add('done');}
+  });
+  // R3 — show count and unlock when reached 3
+  const r3el=document.getElementById('ts-r3');const r3ti=document.getElementById('ti-r3');
+  if(r3el&&!cu.tasks['r3']){
+    const cnt=cu.confirmed||0;
+    if(cnt>=3){
+      r3el.textContent='Claim!';r3el.style.background='var(--green)';r3el.style.color='#fff';r3el.style.borderRadius='8px';r3el.style.padding='4px 10px';
+      if(r3ti)r3ti.style.opacity='1';
+    } else {
+      r3el.textContent=cnt+'/3';r3el.style.background='';r3el.style.color='';
+    }
+  }
+  // Team 40
+  const teamEl=document.getElementById('ts-team');
+  if(teamEl&&!cu.tasks['team']){
+    const cnt=cu.confirmed||0;
+    if(cnt>=40){teamEl.textContent='Claim!';teamEl.style.background='var(--green)';teamEl.style.color='#fff';teamEl.style.borderRadius='8px';teamEl.style.padding='4px 10px';}
+    else teamEl.textContent=cnt+'/40';
+  }
+  // VIP status — show locked or unlocked based on AMD5/AMD6
+  const vipEl=document.getElementById('ts-vip');const vipTi=document.getElementById('ti-vip');
+  if(vipEl&&!cu.tasks['vip']){
+    const hasVip=(cu.activePlans||[]).some(p=>p.pkg==='amd5'||p.pkg==='amd6');
+    if(hasVip){
+      vipEl.textContent='Claim!';vipEl.style.background='var(--green)';vipEl.style.color='#fff';vipEl.style.borderRadius='8px';vipEl.style.padding='4px 10px';
+    } else {
+      vipEl.textContent='🔒 Locked';vipEl.style.background='';vipEl.style.color='var(--muted)';
+    }
+  }
+  const confirmed=cu.confirmed||0;
+  if(tp)tp.style.width=Math.min(100,(confirmed/40*100))+'%';
+  if(tc)tc.textContent=confirmed+' / 40 members';
+}
+
+// ── CHECK-IN ──
+function doCI(){
+  const u=window._u;if(!u)return;
+  u.checkins=u.checkins||[];
+  if(u.checkins.includes(todayStr())){toast('✅ Already checked in today!');return;}
+  u.balance=(u.balance||0)+5;u.todayEarned=(u.todayEarned||0)+5;u.checkins.push(todayStr());
+  saveU(u);updBal(u.balance);addTx('checkin',5,'✅ Daily Check-In Bonus');buildCal();
+  toast('✅ Checked in! +5 Birr added! 🎉');
+}
+function buildCal(){
+  const g=document.getElementById('cal');if(!g)return;g.innerHTML='';
+  const u=window._u;const chk=(u&&u.checkins)||[];
+  const now=new Date();const today=now.getDate();
+  const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(now.getFullYear(),now.getMonth(),d).toDateString();
+    const isToday=d===today;const isDone=chk.includes(dt);
+    const div=document.createElement('div');
+    div.className='cal-day '+(isDone?'done':isToday?'today':'fut');
+    const r=d%7===0?'10₿':d===dim?'50₿':'5₿';
+    div.innerHTML=d+'<div class="dr">'+r+'</div>';
+    if(isToday&&!isDone)div.onclick=doCI;
+    g.appendChild(div);
+  }
+}
+
+// ── PROFILE ──
+function savePro(){const u=window._u;if(!u)return;const n=document.getElementById('pname').value.trim();if(!n){toast('⚠️ Enter your name');return;}u.name=n;saveU(u);document.getElementById('mname').textContent=n;cm('pm');toast('Profile updated! ✅');}
+function chPw(){const u=window._u;if(!u)return;const cp=document.getElementById('cpw').value;const np=document.getElementById('npw').value;const cn=document.getElementById('cnpw').value;if(cp!==u.pass){toast('❌ Current password is wrong');return;}if(!np||np.length<6){toast('⚠️ Password must be at least 6 characters');return;}if(np!==cn){toast('⚠️ Passwords do not match');return;}u.pass=np;saveU(u);cm('scm');toast('Password updated! 🔒');}
+function saveBk(){const u=window._u;if(!u)return;const num=document.getElementById('bknum').value.trim();const bank=document.getElementById('bkbank').value;const holder=document.getElementById('bkholder').value.trim();if(!num||!holder){toast('⚠️ Fill in all fields');return;}u.bankAccount={number:num,bank,holder};saveU(u);cm('bkm');toast('Bank account saved! 💳');}
+function doOut(){S.d('sess');location.href=getBase();}
+
+// ── INVITE ──
+function cpL(){const l=document.getElementById('mylink').textContent;if(navigator.clipboard){navigator.clipboard.writeText(l).then(()=>toast('🔗 Invite link copied!'));}else{const t=document.createElement('textarea');t.value=l;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Copied!');}}
+function shL(){const l=document.getElementById('mylink').textContent;if(navigator.share)navigator.share({title:'Join AgroVest!',text:'🌾 Join me and earn 50 Birr signup bonus!',url:l}).then(()=>toast('Shared! 🎉')).catch(()=>cpL());else cpL();}
+
+// ── CASH GIFT ──
+function claimGift(){
+  const u=window._u;if(!u)return;
+  const code=document.getElementById('cg-code').value.trim().toUpperCase();
+  const res=document.getElementById('cg-result');
+  res.style.display='none';
+  if(!code||code.length<4){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:12px;padding:13px;color:var(--red);font-size:13px;font-weight:600;text-align:center;">⚠️ Please enter a valid gift code.</div>';
+    res.style.display='block';return;
+  }
+  const gifts=S.g('giftcodes')||{};
+  const gc=gifts[code];
+  if(!gc){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:12px;padding:13px;color:var(--red);font-size:13px;font-weight:600;text-align:center;">❌ Invalid code. Please check and try again.</div>';
+    res.style.display='block';return;
+  }
+  if(gc.used){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:12px;padding:13px;color:var(--red);font-size:13px;font-weight:600;text-align:center;">⚠️ This code has already been used.</div>';
+    res.style.display='block';return;
+  }
+  if(gc.usedBy&&gc.usedBy===u.uid){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:12px;padding:13px;color:var(--red);font-size:13px;font-weight:600;text-align:center;">⚠️ You already claimed this code.</div>';
+    res.style.display='block';return;
+  }
+  if(gc.expires&&Date.now()>gc.expires){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:12px;padding:13px;color:var(--red);font-size:13px;font-weight:600;text-align:center;">⏰ This code has expired.</div>';
+    res.style.display='block';return;
+  }
+  // ✅ Valid — credit!
+  const amt=gc.amount;
+  u.balance=(u.balance||0)+amt;
+  u.todayEarned=(u.todayEarned||0)+amt;
+  gc.used=true;gc.usedBy=u.uid;gc.usedAt=nowStr();
+  S.s('giftcodes',gifts);
+  saveU(u);updBal(u.balance);
+  addTx('bonus',amt,'🎁 Cash Gift Code: '+code);
+  document.getElementById('cg-code').value='';
+  res.innerHTML=`<div style="background:linear-gradient(135deg,#FF6B35,#FFB347);border-radius:12px;padding:18px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:6px;">🎉</div>
+    <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#fff;">+${amt} Birr</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.9);margin-top:4px;">Gift claimed successfully!</div>
+  </div>`;
+  res.style.display='block';
+  toast('🎁 +'+amt+' Birr gift claimed! 🎉');
+}
+
+// ── RENDER MY REFERRALS LIST ──
+function renderMyReferrals(){
+  const u=window._u;if(!u)return;
+  const refs=u.referrals||[];
+  const el=document.getElementById('my-referrals-list');
+  const lbl=document.getElementById('ref-count-lbl');
+  if(!el)return;
+  if(lbl)lbl.textContent=refs.length+' people';
+  if(!refs.length){
+    el.innerHTML='<div style="background:var(--cream);border-radius:12px;padding:14px;text-align:center;font-size:13px;color:var(--muted);border:1.5px dashed var(--border);">No referrals yet. Share your link and tap 🔄 Sync Now!</div>';
+    return;
+  }
+  el.innerHTML=refs.slice().reverse().map(function(r,i){
+    return '<div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);">'
+      +'<div style="width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:800;flex-shrink:0;">'+(r.name?r.name[0].toUpperCase():'?')+'</div>'
+      +'<div style="flex:1;">'
+      +'<div style="font-weight:700;font-size:14px;color:var(--text);">'+r.name+'</div>'
+      +'<div style="font-size:11px;color:var(--muted);">📱 '+r.phone+' · 📅 '+r.joined+'</div>'
+      +'</div>'
+      +'<div style="font-weight:800;font-size:14px;color:var(--green);">+50 ₿</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── NAV / HELPERS ──
+function sw(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nv').forEach(x=>x.classList.remove('on'));
+  document.getElementById('sc-'+n).classList.add('on');
+  const nv=document.getElementById('nv-'+n);if(nv)nv.classList.add('on');
+  if(n==='wealth')renderTx();
+  // Always refresh from storage when switching to Mine or Task tab
+  if(n==='mine'||n==='task'){
+    const fresh=getU(S.g('sess'));
+    if(fresh){window._u=fresh;fillUI();refreshTasks();}
+    // ── Auto sync referrals from Firebase ──
+    fbSyncMyReferrals();
+  }
+}
+function stt(el,id){document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('on'));el.classList.add('on');['ttd','ttp','ttc','tts'].forEach(t=>document.getElementById(t).style.display=t===id?'block':'none');}
+function om(id){document.getElementById(id).classList.add('open');}
+function cm(id){document.getElementById(id).classList.remove('open');}
+function cmo(e,id){if(e.target.classList.contains('mo'))cm(id);}
+function tp(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'🙈':'👁️';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function showNews(){toast('📢 Latest: Premium package earns 15% daily!');}
+
+</script>
+
+<!-- ═══ ADMIN PANEL — access via #admin in URL ═══ -->
+<div id="admin-wrap" style="display:none;position:fixed;inset:0;z-index:9999;overflow-y:auto;">
+
+  <!-- ADMIN LOGIN -->
+  <div id="adm-login" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#1B4332,#2D6A4F);">
+    <div style="background:#fff;border-radius:24px;padding:36px 28px 32px;width:100%;max-width:360px;box-shadow:0 16px 50px rgba(0,0,0,.25);font-family:'DM Sans',sans-serif;">
+      <div style="text-align:center;margin-bottom:26px;">
+        <div style="font-size:52px;">☕</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1B4332;margin-top:10px;">AgroVest Admin</div>
+        <div style="font-size:13px;color:#8A7E72;margin-top:5px;">Manage users &amp; transactions</div>
+      </div>
+
+      <!-- email hidden, password only login -->
+      <label style="font-size:11px;font-weight:700;color:#8A7E72;letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;display:block;">Password</label>
+      <div style="position:relative;margin-bottom:16px;">
+        <input id="apw" type="password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()" style="width:100%;border:2px solid #D4C9B8;border-radius:12px;padding:13px 15px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;background:#F9F6F1;box-sizing:border-box;padding-right:48px;"/>
+        <button onclick="var i=document.getElementById('apw');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁️':'🙈';" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;opacity:.5;">👁️</button>
+      </div>
+      <button onclick="adminLogin()" style="width:100%;background:#1B4332;color:#fff;border:none;border-radius:12px;padding:15px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(27,67,50,.35);">🔓 Sign In</button>
+      <div id="aerr" style="background:#FFE5E5;border-radius:10px;padding:11px 14px;margin-top:14px;font-size:13px;color:#C0392B;display:none;font-weight:600;text-align:center;"></div>
+      <div style="margin-top:16px;text-align:center;"><button onclick="exitAdmin()" style="background:none;border:none;color:rgba(255,255,255,.0);font-size:13px;cursor:pointer;text-decoration:underline;">← Back to App</button></div>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="adm-app" style="display:none;font-family:'DM Sans',sans-serif;background:#ECEAE3;min-height:100vh;">
+    <div style="background:#1B4332;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:50;">
+      <div style="font-family:'Playfair Display',serif;color:#fff;font-size:17px;font-weight:700;">☕ AgroVest Admin</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="exitAdmin()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">← App</button>
+        <button onclick="adminOut()" style="background:transparent;border:1.5px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">Sign Out</button>
+      </div>
+    </div>
+    <div id="atabs" style="display:flex;background:#fff;border-bottom:2px solid #D4C9B8;overflow-x:auto;scrollbar-width:none;">
+      <div class="atab on" onclick="goATab(this,'apg-ov')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid #1B4332;color:#1B4332;white-space:nowrap;">📊 Overview</div>
+      <div class="atab" onclick="goATab(this,'apg-dep')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">⬇️ Recharges</div>
+      <div class="atab" onclick="goATab(this,'apg-wit')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">⬆️ Withdrawals</div>
+      <div class="atab" onclick="goATab(this,'apg-usr')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">👥 Users</div>
+      <div class="atab" onclick="goATab(this,'apg-ref')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">🔗 Referrals</div>
+      <div class="atab" onclick="goATab(this,'apg-adj')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">💰 Adjust</div>
+      <div class="atab" onclick="goATab(this,'apg-gift')" style="padding:13px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:#8A7E72;white-space:nowrap;">🎁 Gift Codes</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="apg-ov" class="apg" style="display:block;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;">
+        <div style="background:#fff;border-radius:14px;padding:16px;border:1.5px solid #D4C9B8;"><div style="font-size:10px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Users</div><div id="as-usr" style="font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:#1B4332;margin-top:6px;">0</div></div>
+        <div style="background:#fff;border-radius:14px;padding:16px;border:1.5px solid #D4C9B8;"><div style="font-size:10px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Pending Recharges</div><div id="as-pdep" style="font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:#C8860A;margin-top:6px;">0</div></div>
+        <div style="background:#fff;border-radius:14px;padding:16px;border:1.5px solid #D4C9B8;"><div style="font-size:10px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Pending Withdrawals</div><div id="as-pwit" style="font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:#C0392B;margin-top:6px;">0</div></div>
+        <div style="background:#fff;border-radius:14px;padding:16px;border:1.5px solid #D4C9B8;"><div style="font-size:10px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Total Deposits</div><div id="as-dep" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#2563EB;margin-top:6px;">0</div></div>
+      </div>
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">🕐 Recent Transactions</div>
+          <button onclick="aLoadOv()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="aov-tbl" style="width:100%;border-collapse:collapse;min-width:500px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+
+    <!-- RECHARGES -->
+    <div id="apg-dep" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">⬇️ Recharge Requests</div>
+          <button onclick="aLoadDeps()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="adep-tbl" style="width:100%;border-collapse:collapse;min-width:600px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div id="apg-wit" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">⬆️ Withdrawal Requests</div>
+          <button onclick="aLoadWits()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="awit-tbl" style="width:100%;border-collapse:collapse;min-width:600px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="apg-usr" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">👥 All Users</div>
+          <button onclick="aLoadUsers()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="ausr-tbl" style="width:100%;border-collapse:collapse;min-width:500px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+
+    <!-- REFERRALS PAGE -->
+    <div id="apg-ref" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">🔗 Referral Commissions</div>
+          <button onclick="aLoadRefDetails()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="aref-tbl" style="width:100%;border-collapse:collapse;min-width:600px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+
+    <!-- ADJUST BALANCE -->
+    <div id="apg-adj" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+
+      <!-- ── FIREBASE RESYNC TOOL ── -->
+      <div style="background:#fff;border-radius:14px;border:2px solid #1B4332;overflow:hidden;margin-bottom:16px;">
+        <div style="background:#1B4332;padding:14px 16px;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;">🔥 Firebase Referral Re-Sync</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;">Push ALL existing referral data to Firebase so users can sync their counts</div>
+        </div>
+        <div style="padding:16px;">
+          <button onclick="adminResyncFirebase()" style="background:#1B4332;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:100%;">🔄 Push All Referrals to Firebase Now</button>
+          <div id="fb-resync-result" style="margin-top:12px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- ── RESET ALL USERS ── -->
+      <div style="background:#fff;border-radius:14px;border:2px solid #C0392B;overflow:hidden;margin-bottom:16px;">
+        <div style="background:#C0392B;padding:14px 16px;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;">🗑️ Reset All Users Data</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:4px;">Delete ALL registered users so everyone can register fresh with your referral link</div>
+        </div>
+        <div style="padding:16px;">
+          <div style="background:#FFF3F3;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;color:#C0392B;line-height:1.7;border:1px solid #FFCCCC;">
+            ⚠️ <strong>WARNING:</strong> This will delete ALL user accounts, balances, and data. This action cannot be undone. Only use this to start fresh!
+          </div>
+          <button onclick="adminResetAllUsers()" style="background:#C0392B;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:100%;">🗑️ Delete All Users & Start Fresh</button>
+          <div id="reset-result" style="margin-top:12px;display:none;"></div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="padding:14px 16px;border-bottom:1.5px solid #D4C9B8;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">💰 Adjust User Balance</div>
+        <div style="padding:18px;">
+          <p style="font-size:13px;color:#8A7E72;margin-bottom:16px;line-height:1.65;">Credit or deduct user balance. Enter phone exactly as registered.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Phone</label><input id="aadj-ph" type="tel" placeholder="e.g. 0912345678" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:190px;"/></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Amount (Birr)</label><input id="aadj-amt" type="number" placeholder="e.g. 1000" min="1" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:140px;"/></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Type</label><select id="aadj-type" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:170px;"><option value="credit">➕ Add Balance</option><option value="deduct">➖ Deduct Balance</option></select></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Reason</label><input id="aadj-note" type="text" placeholder="e.g. Recharge verified" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:200px;"/></div>
+            <button onclick="aAdjBal()" style="background:#1B4332;color:#fff;border:none;border-radius:10px;padding:11px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">✅ Apply</button>
+          </div>
+          <div id="aadj-res" style="margin-top:14px;display:none;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- GIFT CODES PAGE -->
+    <div id="apg-gift" class="apg" style="display:none;padding:16px;max-width:1200px;margin:0 auto;">
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;margin-bottom:16px;">
+        <div style="padding:14px 16px;border-bottom:1.5px solid #D4C9B8;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">🎁 Generate Gift Codes</div>
+        <div style="padding:18px;">
+          <p style="font-size:13px;color:#8A7E72;margin-bottom:16px;line-height:1.65;">Generate random codes giving 0–150 Birr. Share them with your users to claim via Cash Gift button.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">How Many</label><input id="gc-count" type="number" value="5" min="1" max="50" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:120px;"/></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Min Birr</label><input id="gc-min" type="number" value="0" min="0" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:110px;"/></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Max Birr</label><input id="gc-max" type="number" value="150" min="1" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:110px;"/></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><label style="font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;">Expires (hours)</label><input id="gc-exp" type="number" value="24" min="1" style="border:1.5px solid #D4C9B8;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:14px;outline:none;background:#F9F6F1;width:130px;"/></div>
+            <button onclick="genGiftCodes()" style="background:linear-gradient(135deg,#FF6B35,#FFB347);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">🎁 Generate</button>
+          </div>
+          <div id="gc-generated" style="margin-top:16px;display:none;"></div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:14px;border:1.5px solid #D4C9B8;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #D4C9B8;">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">📋 All Gift Codes</div>
+          <button onclick="aLoadGifts()" style="background:#F2EDE4;border:1.5px solid #D4C9B8;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#1B4332;">🔄 Refresh</button>
+        </div>
+        <div style="overflow-x:auto;"><table id="agift-tbl" style="width:100%;border-collapse:collapse;min-width:400px;font-family:'DM Sans',sans-serif;"></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const ADMIN_EMAIL='0928488477';
+const ADMIN_PASS='chane123';
+
+// Table helpers
+function aTH(cols){return '<thead><tr>'+cols.map(c=>'<th style="background:#F5F0E8;padding:10px 14px;font-size:11px;font-weight:700;color:#8A7E72;text-transform:uppercase;text-align:left;border-bottom:1.5px solid #D4C9B8;white-space:nowrap;">'+c+'</th>').join('')+'</tr></thead>';}
+function aTD(v,s){return '<td style="padding:11px 14px;font-size:13px;border-bottom:1px solid #D4C9B8;vertical-align:middle;'+(s||'')+'">'+v+'</td>';}
+function aBdg(s){var c=s==='pending'?'background:#FFF8E0;color:#C8860A':s==='approved'?'background:#E8F5EE;color:#1B4332':'background:#FFE5E5;color:#C0392B';return '<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;'+c+'">'+s+'</span>';}
+
+// URL hash routing
+window.addEventListener('load',function(){
+  if(location.hash==='#admin')openAdmin();
+});
+window.addEventListener('hashchange',function(){
+  if(location.hash==='#admin')openAdmin();
+  else document.getElementById('admin-wrap').style.display='none';
+});
+
+function openAdmin(){
+  var wrap=document.getElementById('admin-wrap');
+  wrap.style.cssText='display:block!important;position:fixed;inset:0;z-index:99999;overflow-y:auto;background:#ECEAE3;';
+  document.body.style.overflow='hidden';
+  var sess=S.g('admin_sess');
+  if(sess==='ok'||sess==='admin@agrovest.app'){
+    showAdmApp();
+  } else {
+    document.getElementById('adm-login').style.display='flex';
+    document.getElementById('adm-app').style.display='none';
+  }
+}
+function exitAdmin(){
+  var wrap=document.getElementById('admin-wrap');
+  wrap.style.cssText='display:none!important;';
+  document.body.style.overflow='';
+  history.pushState('',document.title,window.location.pathname+window.location.search);
+}
+
+function adminLogin(){
+  var pw=document.getElementById('apw').value.trim();
+  var err=document.getElementById('aerr');
+  err.style.display='none';
+  if(!pw){err.textContent='⚠️ Please enter your password.';err.style.display='block';return;}
+  if(pw===ADMIN_PASS||pw===ADMIN_PASS.toLowerCase()||pw===ADMIN_PASS.toUpperCase()){
+    S.s('admin_sess','admin@agrovest.app');
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-app').style.display='block';
+    if(typeof aLoadOv==='function'){aLoadOv();aLoadDeps();aLoadWits();}
+  } else {
+    err.innerHTML='❌ Wrong password. Please try again.';
+    err.style.display='block';
+    document.getElementById('apw').value='';
+    document.getElementById('apw').focus();
+  }
+}
+function showAdmApp(){
+  document.getElementById('adm-login').style.display='none';
+  document.getElementById('adm-app').style.display='block';
+  aLoadOv();aLoadDeps();aLoadWits();
+}
+function adminOut(){
+  S.d('admin_sess');
+  document.getElementById('adm-login').style.display='flex';
+  document.getElementById('adm-app').style.display='none';
+  document.getElementById('apw').value='';
+}
+function goATab(el,id){
+  document.querySelectorAll('.atab').forEach(function(t){t.style.color='#8A7E72';t.style.borderBottom='3px solid transparent';});
+  el.style.color='#1B4332';el.style.borderBottom='3px solid #1B4332';
+  ['apg-ov','apg-dep','apg-wit','apg-usr','apg-ref','apg-adj','apg-gift'].forEach(function(p){document.getElementById(p).style.display=p===id?'block':'none';});
+  if(id==='apg-usr')aLoadUsers();
+  if(id==='apg-ref')aLoadRefDetails();
+  if(id==='apg-gift')aLoadGifts();
+}
+
+function aLoadOv(){
+  var us=S.g('users')||{};var deps=S.g('deposits')||[];var wits=S.g('withdrawals')||[];
+  var uArr=Object.values(us);
+  document.getElementById('as-usr').textContent=uArr.length;
+  document.getElementById('as-pdep').textContent=deps.filter(function(d){return d.status==='pending';}).length;
+  document.getElementById('as-pwit').textContent=wits.filter(function(w){return w.status==='pending';}).length;
+  var tot=deps.filter(function(d){return d.status==='approved';}).reduce(function(a,d){return a+(d.amt||0);},0);
+  document.getElementById('as-dep').textContent=tot.toLocaleString()+' Birr';
+  var all=[];
+  uArr.forEach(function(u){(u.txns||[]).forEach(function(t){all.push(Object.assign({},t,{uname:u.name,uphone:u.phone}));});});
+  all.sort(function(a,b){return (b.id||'').localeCompare(a.id||'');});
+  var tbl=document.getElementById('aov-tbl');
+  if(!all.length){tbl.innerHTML=aTH(['User','Type','Amount','Description','Status','Time'])+'<tbody><tr><td colspan="6" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No transactions yet.</td></tr></tbody>';return;}
+  var isIn=function(t){return ['bonus','referral','task','checkin','deposit','admin','daily_income'].indexOf(t)>=0;};
+  tbl.innerHTML=aTH(['User','Type','Amount','Description','Status','Time'])+'<tbody>'+all.slice(0,50).map(function(t){return '<tr>'+aTD('<strong>'+( t.uname||'—')+'</strong><br/><span style="font-size:11px;color:#8A7E72;">'+(t.uphone||'')+'</span>')+aTD(t.type,'font-size:12px;')+aTD((isIn(t.type)?'+':'−')+Math.round(t.amt||0)+' Birr','font-weight:700;color:'+(isIn(t.type)?'#1B4332':'#C0392B')+';')+aTD(t.desc||'—','font-size:12px;')+aTD(aBdg(t.status||'approved'))+aTD(t.date||'','font-size:11px;color:#8A7E72;')+'</tr>';}).join('')+'</tbody>';
+}
+
+function aLoadDeps(){
+  var tbl=document.getElementById('adep-tbl');
+  var head=aTH(['Name','Phone','Amount','Method','Reference','Date','Status','Action']);
+  tbl.innerHTML=head+'<tbody><tr><td colspan="8" style="text-align:center;padding:24px;color:#8A7E72;">⏳ Loading from server...</td></tr></tbody>';
+  // Merge local + Firebase deposits
+  fetch(FB+'/deposits.json').then(function(r){return r.json();}).then(function(fbData){
+    var local=S.g('deposits')||[];
+    var merged={};
+    local.forEach(function(d){if(d&&d.id)merged[d.id]=d;});
+    if(fbData&&typeof fbData==='object'){Object.values(fbData).forEach(function(d){if(d&&d.id)merged[d.id]=d;});}
+    var deps=Object.values(merged).sort(function(a,b){return (b.id||'').localeCompare(a.id||'');});
+    // Save merged back to local
+    S.s('deposits',deps);
+    if(!deps.length){tbl.innerHTML=head+'<tbody><tr><td colspan="8" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No recharge requests yet.</td></tr></tbody>';return;}
+    tbl.innerHTML=head+'<tbody>'+deps.map(function(d,i){
+      var acts=d.status==='pending'?'<button onclick="aApproveDep(\''+d.id+'\')" style="background:#E8F5EE;color:#1B4332;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;margin-right:4px;">✅ Approve</button><button onclick="aRejectDep(\''+d.id+'\')" style="background:#FFE5E5;color:#C0392B;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;">❌ Reject</button>':aBdg(d.status);
+      return '<tr>'+aTD('<strong>'+d.name+'</strong>')+aTD(d.phone,'font-family:monospace;')+aTD('<strong style="color:#1B4332;">'+(d.amt||0).toLocaleString()+' Birr</strong>')+aTD(d.meth||'')+aTD(d.ref||'','font-size:12px;')+aTD(d.date||'','font-size:12px;color:#8A7E72;')+aTD(aBdg(d.status))+aTD(acts)+'</tr>';
+    }).join('')+'</tbody>';
+  }).catch(function(){
+    var deps=S.g('deposits')||[];
+    if(!deps.length){tbl.innerHTML=head+'<tbody><tr><td colspan="8" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No recharge requests yet.</td></tr></tbody>';return;}
+    tbl.innerHTML=head+'<tbody>'+deps.map(function(d,i){
+      var acts=d.status==='pending'?'<button onclick="aApproveDep(\''+d.id+'\')" style="background:#E8F5EE;color:#1B4332;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;margin-right:4px;">✅ Approve</button><button onclick="aRejectDep(\''+d.id+'\')" style="background:#FFE5E5;color:#C0392B;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;">❌ Reject</button>':aBdg(d.status);
+      return '<tr>'+aTD('<strong>'+d.name+'</strong>')+aTD(d.phone,'font-family:monospace;')+aTD('<strong style="color:#1B4332;">'+(d.amt||0).toLocaleString()+' Birr</strong>')+aTD(d.meth||'')+aTD(d.ref||'','font-size:12px;')+aTD(d.date||'','font-size:12px;color:#8A7E72;')+aTD(aBdg(d.status))+aTD(acts)+'</tr>';
+    }).join('')+'</tbody>';
+  });
+}
+function aApproveDep(depId){
+  if(!confirm('Approve recharge and credit user?'))return;
+  var deps=S.g('deposits')||[];
+  var idx=deps.findIndex(function(d){return d.id===depId;});
+  var d=idx>=0?deps[idx]:null;
+  if(!d||d.status!=='pending'){toast('Already processed');return;}
+  deps[idx].status='approved';S.s('deposits',deps);
+
+  // ── Update deposit status in Firebase ──
+  fetch(FB+'/deposits/'+depId+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'approved'})}).catch(function(){});
+
+  // ── Save approved notification for user ──
+  // User's app checks /notifications/USER_UID on login and credits balance
+  var notification={
+    type:'deposit_approved',
+    depId:depId,
+    amt:d.amt,
+    date:new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+    ts:Date.now()
+  };
+  fetch(FB+'/notifications/'+d.uid+'/'+depId+'.json',{
+    method:'PUT',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(notification)
+  }).catch(function(){});
+
+  var us=S.g('users')||{};
+  var u=Object.values(us).find(function(x){return x.uid===d.uid;});
+  if(u){
+    u.balance=(u.balance||0)+d.amt;
+    u.hasRecharged=true;
+    u.txns=u.txns||[];
+    // Update pending tx or add new one
+    var tx=u.txns.find(function(t){return t.type==='deposit'&&t.status==='pending'&&t.amt===d.amt;});
+    if(tx){tx.status='approved';}else{u.txns.unshift({id:depId,type:'deposit',amt:d.amt,desc:'⬇️ Recharge approved — '+d.meth,status:'approved',date:notification.date});}
+    us[u.uid]=u;
+
+    // 3-level commission
+    var levels=[{pct:0.10,label:'Level 1 (10%)'},{pct:0.02,label:'Level 2 (2%)'},{pct:0.01,label:'Level 3 (1%)'}];
+    var currentUid=u.refBy||u.ref;
+    for(var lvl=0;lvl<3;lvl++){
+      if(!currentUid)break;
+      var referrer=Object.values(us).find(function(x){return x.uid===currentUid;});
+      if(!referrer)break;
+      var commission=Math.floor(d.amt*levels[lvl].pct);
+      if(commission>0){
+        referrer.balance=(referrer.balance||0)+commission;
+        referrer.earnedRefs=(referrer.earnedRefs||0)+commission;
+        referrer.txns=referrer.txns||[];
+        referrer.txns.unshift({id:'com'+Date.now()+'_'+lvl,type:'referral',amt:commission,desc:'💰 Commission '+levels[lvl].label+' — '+u.name+' recharged '+d.amt.toLocaleString()+' Birr',status:'approved',date:notification.date,fromUid:u.uid,fromName:u.name,level:lvl+1});
+        us[referrer.uid]=referrer;
+        // Push commission notification to referrer
+        fetch(FB+'/notifications/'+referrer.uid+'/com'+Date.now()+'_'+lvl+'.json',{
+          method:'PUT',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({type:'commission',amt:commission,from:u.name,ts:Date.now()})
+        }).catch(function(){});
+      }
+      currentUid=referrer.refBy||referrer.ref;
+    }
+    S.s('users',us);
+
+    // ── Push FULL updated user to Firebase so they receive balance on their phone ──
+    fetch(FB+'/allusers/'+u.uid+'.json',{
+      method:'PATCH',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        balance:u.balance,
+        hasRecharged:true,
+        txns:u.txns
+      })
+    }).catch(function(){});
+
+    toast('✅ '+d.amt.toLocaleString()+' Birr credited to '+u.name+' — they will see it when they open the app!');
+  } else {
+    toast('✅ Approved! User will be notified.');
+  }
+  aLoadDeps();aLoadOv();
+}
+function aRejectDep(depId){
+  if(!confirm('Reject this recharge?'))return;
+  var deps=S.g('deposits')||[];
+  var idx=deps.findIndex(function(d){return d.id===depId;});
+  if(idx<0)return;
+  deps[idx].status='rejected';S.s('deposits',deps);
+  fetch(FB+'/deposits/'+depId+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'rejected'})}).catch(function(){});
+  var us=S.g('users')||{};var u=Object.values(us).find(function(x){return x.uid===deps[idx].uid;});
+  if(u){var tx=(u.txns||[]).find(function(t){return t.type==='deposit'&&t.status==='pending';});if(tx)tx.status='rejected';us[u.uid]=u;S.s('users',us);}
+  toast('Recharge rejected.');aLoadDeps();aLoadOv();
+}
+
+function aLoadWits(){
+  var tbl=document.getElementById('awit-tbl');
+  var head=aTH(['Name','Phone','Amount','Bank','Account','Holder','Date','Status','Action']);
+  tbl.innerHTML=head+'<tbody><tr><td colspan="9" style="text-align:center;padding:24px;color:#8A7E72;">⏳ Loading from server...</td></tr></tbody>';
+  fetch(FB+'/withdrawals.json').then(function(r){return r.json();}).then(function(fbData){
+    var local=S.g('withdrawals')||[];
+    var merged={};
+    local.forEach(function(w){if(w&&w.id)merged[w.id]=w;});
+    if(fbData&&typeof fbData==='object'){Object.values(fbData).forEach(function(w){if(w&&w.id)merged[w.id]=w;});}
+    var wits=Object.values(merged).sort(function(a,b){return (b.id||'').localeCompare(a.id||'');});
+    S.s('withdrawals',wits);
+    renderWitTable(wits,tbl,head);
+  }).catch(function(){
+    var wits=S.g('withdrawals')||[];
+    renderWitTable(wits,tbl,head);
+  });
+}
+function renderWitTable(wits,tbl,head){
+  if(!wits.length){tbl.innerHTML=head+'<tbody><tr><td colspan="9" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No withdrawal requests yet.</td></tr></tbody>';return;}
+  tbl.innerHTML=head+'<tbody>'+wits.map(function(w){
+    var acts=w.status==='pending'?'<button onclick="aApproveWit(\''+w.id+'\')" style="background:#E8F5EE;color:#1B4332;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;margin-right:4px;">✅ Paid</button><button onclick="aRejectWit(\''+w.id+'\')" style="background:#FFE5E5;color:#C0392B;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;">❌ Refund</button>':aBdg(w.status);
+    return '<tr>'+aTD('<strong>'+w.name+'</strong>')+aTD(w.phone,'font-family:monospace;')+aTD('<strong style="color:#C0392B;">'+(w.amt||0).toLocaleString()+' Birr</strong><br/><span style="font-size:11px;color:#1B4332;">Net: '+(w.net||0).toLocaleString()+'</span>')+aTD(w.bank||'')+aTD(w.acct||'','font-size:12px;font-family:monospace;')+aTD(w.wname||'')+aTD(w.date||'','font-size:12px;color:#8A7E72;')+aTD(aBdg(w.status))+aTD(acts)+'</tr>';
+  }).join('')+'</tbody>';
+}
+function aApproveWit(witId){
+  if(!confirm('Mark withdrawal as PAID?'))return;
+  var wits=S.g('withdrawals')||[];
+  var idx=wits.findIndex(function(w){return w.id===witId;});
+  if(idx<0)return;
+  wits[idx].status='approved';S.s('withdrawals',wits);
+  fetch(FB+'/withdrawals/'+witId+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'approved'})}).catch(function(){});
+  toast('✅ Marked as Paid!');aLoadWits();aLoadOv();
+}
+function aRejectWit(witId){
+  var wits=S.g('withdrawals')||[];
+  var idx=wits.findIndex(function(w){return w.id===witId;});
+  if(idx<0)return;
+  var w=wits[idx];
+  if(!confirm('Reject and REFUND '+(w.amt||0).toLocaleString()+' Birr to '+w.name+'?'))return;
+  wits[idx].status='rejected';S.s('withdrawals',wits);
+  fetch(FB+'/withdrawals/'+witId+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'rejected'})}).catch(function(){});
+  var us=S.g('users')||{};var u=Object.values(us).find(function(x){return x.uid===w.uid;});
+  if(u){u.balance=(u.balance||0)+w.amt;us[u.uid]=u;S.s('users',us);toast('✅ Refunded '+w.amt.toLocaleString()+' Birr to '+w.name);}
+  aLoadWits();aLoadOv();
+}
+
+function aLoadUsers(){
+  var us=S.g('users')||{};var tbl=document.getElementById('ausr-tbl');
+  var arr=Object.values(us);
+  var head=aTH(['Name','Phone','Balance','Plans','Referred By','Referrals','IP Address','Joined']);
+  if(!arr.length){tbl.innerHTML=head+'<tbody><tr><td colspan="8" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No users yet.</td></tr></tbody>';return;}
+  tbl.innerHTML=head+'<tbody>'+arr.sort(function(a,b){return (b.joined||0)-(a.joined||0);}).map(function(u){
+    var refByName='—';
+    if(u.refBy){var ru=us[u.refBy];refByName=ru?'<span style="color:#1B4332;font-weight:700;">'+ru.name+'</span>':'<span style="font-size:11px;color:#8A7E72;">'+u.refBy+'</span>';}
+    var refs=u.confirmed||0;
+    return '<tr>'
+      +aTD('<strong>'+u.name+'</strong><br/><span style="font-size:10px;color:#8A7E72;font-family:monospace;">'+u.uid+'</span>')
+      +aTD(u.phone)
+      +aTD('<strong style="color:#1B4332;">'+Math.round(u.balance||0).toLocaleString()+' ₿</strong>')
+      +aTD(u.plans||0)
+      +aTD(refByName)
+      +aTD(refs>0?'<strong style="color:#1B4332;">'+refs+'</strong> people':'0')
+      +aTD('<span style="font-family:monospace;font-size:11px;color:#8A7E72;">'+(u.ip||'—')+'</span>')
+      +aTD(u.joined?new Date(u.joined).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—','font-size:12px;color:#8A7E72;')
+      +'</tr>';
+  }).join('')+'</tbody>';
+}
+
+// ── REFERRAL DETAILS ──
+function aLoadRefDetails(){
+  var us=S.g('users')||{};
+  var tbl=document.getElementById('aref-tbl');
+  if(!tbl)return;
+  var arr=Object.values(us).filter(function(u){return (u.confirmed||0)>0||(u.referrals&&u.referrals.length);});
+  var head=aTH(['Referrer','Phone','IP','Total Referred','Earned','Referral Details']);
+  if(!arr.length){
+    tbl.innerHTML=head+'<tbody><tr><td colspan="6" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No referrals yet.</td></tr></tbody>';
+    return;
+  }
+  arr.sort(function(a,b){return (b.confirmed||0)-(a.confirmed||0);});
+  tbl.innerHTML=head+'<tbody>'+arr.map(function(u){
+    var refs=u.referrals||[];
+    var refHTML=refs.length?refs.map(function(r,i){
+      return '<div style="font-size:11px;padding:3px 0;border-bottom:1px solid #F5F0E8;">'
+        +'<strong>'+(i+1)+'.</strong> '+r.name+' · 📱 '+r.phone
+        +' · 🌐 <span style="font-family:monospace;">'+r.ip+'</span>'
+        +' · 📅 '+r.joined
+        +' · <span style="color:#1B4332;font-weight:700;">+'+r.bonus+' ₿</span>'
+        +'</div>';
+    }).join(''):'<span style="font-size:12px;color:#8A7E72;">—</span>';
+    return '<tr>'
+      +aTD('<strong>'+u.name+'</strong>')
+      +aTD(u.phone)
+      +aTD('<span style="font-family:monospace;font-size:11px;color:#8A7E72;">'+(u.ip||'—')+'</span>')
+      +aTD('<strong style="color:#1B4332;font-size:16px;">'+(u.confirmed||0)+'</strong>')
+      +aTD('<strong style="color:#C8860A;">'+(u.earnedRefs||0).toLocaleString()+' ₿</strong>')
+      +aTD(refHTML)
+      +'</tr>';
+  }).join('')+'</tbody>';
+}
+
+// ── ADMIN RESET ALL USERS ──
+async function adminResetAllUsers(){
+  if(!confirm('⚠️ DELETE ALL USERS?\n\nThis will remove ALL accounts, balances and data.\n\nAre you 100% sure?'))return;
+  if(!confirm('FINAL WARNING: All data will be lost forever.\n\nTap OK to confirm DELETE ALL.'))return;
+
+  const res=document.getElementById('reset-result');
+  res.style.display='block';
+  res.innerHTML='<div style="color:#C0392B;font-size:13px;font-weight:600;">⏳ Deleting all users...</div>';
+
+  try{
+    // 1. Clear localStorage user data
+    const keysToDelete=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.startsWith('av4_'))keysToDelete.push(k);
+    }
+    keysToDelete.forEach(k=>localStorage.removeItem(k));
+
+    // 2. Clear Firebase allusers
+    try{
+      await fetch(FB+'/allusers.json',{method:'DELETE'});
+    }catch(e){}
+
+    // 3. Clear Firebase refs
+    try{
+      await fetch(FB+'/refs.json',{method:'DELETE'});
+    }catch(e){}
+
+    // 4. Clear Firebase users
+    try{
+      await fetch(FB+'/users.json',{method:'DELETE'});
+    }catch(e){}
+
+    res.innerHTML='<div style="background:#E8F5EE;border-radius:10px;padding:14px;color:#1B4332;font-size:14px;font-weight:600;">'
+      +'✅ All users deleted successfully!<br/>'
+      +'Now share your referral link and ask friends to register fresh.<br/>'
+      +'<strong>Your referral link: </strong>'+getBase()+'?ref=AGV-7ZPIBZ'
+      +'</div>';
+    toast('✅ All users cleared! Ready for fresh registrations.');
+
+  }catch(e){
+    res.innerHTML='<div style="background:#FFE5E5;border-radius:10px;padding:14px;color:#C0392B;font-size:13px;font-weight:600;">❌ Error: '+e.message+'</div>';
+  }
+}
+
+// ── ADMIN FIREBASE RESYNC ──
+async function adminResyncFirebase(){
+  const res=document.getElementById('fb-resync-result');
+  res.style.display='block';
+  res.innerHTML='<div style="color:#1B4332;font-size:13px;font-weight:600;">⏳ Syncing all referrals to Firebase...</div>';
+
+  const us=S.g('users')||{};
+  const users=Object.values(us);
+  let pushed=0;
+
+  for(var i=0;i<users.length;i++){
+    var u=users[i];
+    // Push user record
+    try{
+      await fetch(FB+'/users/'+u.uid+'.json',{
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({uid:u.uid,name:u.name,phone:u.phone,refBy:u.refBy||u.ref||'',ts:u.joined||Date.now()})
+      });
+    }catch(e){}
+
+    // If this user was referred by someone, push to refs
+    var referrerId=u.refBy||u.ref;
+    if(referrerId){
+      try{
+        await fetch(FB+'/byref/'+referrerId+'/'+u.uid+'.json',{
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({uid:u.uid,name:u.name,phone:u.phone,ip:u.ip||'',ts:u.joined||Date.now()})
+        });
+        pushed++;
+      }catch(e){}
+    }
+  }
+
+  res.innerHTML='<div style="background:#E8F5EE;border-radius:10px;padding:14px;color:#1B4332;font-size:14px;font-weight:600;">'
+    +'✅ Done! Pushed <strong>'+pushed+' referrals</strong> and <strong>'+users.length+' users</strong> to Firebase.<br/>'
+    +'Users can now tap 🔄 Sync Now on their Mine tab to see their referral counts!'
+    +'</div>';
+  toast('✅ Firebase sync complete! '+pushed+' referrals pushed.');
+}
+
+function aAdjBal(){
+  var phone=document.getElementById('aadj-ph').value.trim();
+  var amt=parseInt(document.getElementById('aadj-amt').value);
+  var type=document.getElementById('aadj-type').value;
+  var note=document.getElementById('aadj-note').value.trim()||'Admin adjustment';
+  var res=document.getElementById('aadj-res');
+  res.style.display='none';
+  if(!phone){toast('Enter phone number');return;}
+  if(!amt||amt<1){toast('Enter valid amount');return;}
+  var us=S.g('users')||{};
+  var u=Object.values(us).find(function(x){return x.phone===phone||x.phone==='0'+phone.replace(/^(\+251|251)/,'')||x.phone===phone.replace(/^0/,'')||x.phone==='+251'+phone.replace(/^0/,'')||x.phone===phone.replace(/^(\+251|251)/,'0');});
+  if(!u){res.innerHTML='<div style="background:#FFE5E5;border-radius:10px;padding:13px;color:#C0392B;font-size:13px;font-weight:600;">No user found: '+phone+'</div>';res.style.display='block';return;}
+  if(type==='deduct'&&amt>(u.balance||0)){res.innerHTML='<div style="background:#FFE5E5;border-radius:10px;padding:13px;color:#C0392B;font-size:13px;font-weight:600;">Balance too low: '+Math.round(u.balance).toLocaleString()+' Birr</div>';res.style.display='block';return;}
+  u.balance=(u.balance||0)+(type==='credit'?amt:-amt);
+  if(type==='credit')u.hasRecharged=true;
+  u.txns=u.txns||[];u.txns.unshift({id:'adm'+Date.now(),type:'admin',amt:amt,desc:(type==='credit'?'+ Admin: ':' Admin: ')+note,status:'approved',date:new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})});
+  us[u.uid]=u;S.s('users',us);
+  res.innerHTML='<div style="background:#E8F5EE;border-radius:10px;padding:13px;color:#1B4332;font-size:14px;font-weight:600;line-height:1.7;">'+(type==='credit'?'Added':'Deducted')+' '+amt.toLocaleString()+' Birr '+(type==='credit'?'to':'from')+' '+u.name+'<br/>New balance: '+Math.round(u.balance).toLocaleString()+' Birr</div>';
+  res.style.display='block';toast('Balance updated for '+u.name+'!');aLoadOv();
+  document.getElementById('aadj-ph').value='';document.getElementById('aadj-amt').value='';document.getElementById('aadj-note').value='';
+}
+// ── GIFT CODES ──
+function genCode(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code='';
+  for(var i=0;i<6;i++)code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function genGiftCodes(){
+  var count=parseInt(document.getElementById('gc-count').value)||5;
+  var min=parseInt(document.getElementById('gc-min').value)||0;
+  var max=parseInt(document.getElementById('gc-max').value)||150;
+  var expHrs=parseInt(document.getElementById('gc-exp').value)||24;
+  if(min>max){toast('Min must be less than max');return;}
+  count=Math.min(count,50);
+  var gifts=S.g('giftcodes')||{};
+  var newCodes=[];
+  for(var i=0;i<count;i++){
+    var code=genCode();
+    while(gifts[code])code=genCode(); // ensure unique
+    var amt=min===max?min:Math.floor(Math.random()*(max-min+1))+min;
+    gifts[code]={code:code,amount:amt,used:false,created:new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),expires:Date.now()+(expHrs*3600000)};
+    newCodes.push({code:code,amount:amt});
+  }
+  S.s('giftcodes',gifts);
+  // Show generated codes
+  var el=document.getElementById('gc-generated');
+  el.style.display='block';
+  el.innerHTML='<div style="background:#E8F5EE;border-radius:12px;padding:16px;">'
+    +'<div style="font-weight:700;color:#1B4332;margin-bottom:12px;font-size:14px;">✅ '+count+' codes generated! ('+expHrs+'h expiry)</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+    +newCodes.map(function(c){return '<div style="background:#fff;border:2px solid #1B4332;border-radius:10px;padding:8px 14px;font-family:monospace;font-size:15px;font-weight:800;color:#1B4332;letter-spacing:2px;cursor:pointer;" onclick="copyCode(\''+c.code+'\')" title="Click to copy">'+c.code+' <span style="font-size:11px;color:#C8860A;font-weight:700;letter-spacing:0;">'+c.amount+'₿</span></div>';}).join('')
+    +'</div>'
+    +'<div style="margin-top:10px;font-size:12px;color:#8A7E72;">Click any code to copy. Share with users!</div>'
+    +'</div>';
+  aLoadGifts();
+  toast('✅ '+count+' gift codes generated!');
+}
+function copyCode(code){
+  if(navigator.clipboard)navigator.clipboard.writeText(code).then(function(){toast('Copied: '+code);});
+  else{var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Copied: '+code);}
+}
+function aLoadGifts(){
+  var gifts=S.g('giftcodes')||{};
+  var tbl=document.getElementById('agift-tbl');
+  if(!tbl)return;
+  var arr=Object.values(gifts).sort(function(a,b){return (b.expires||0)-(a.expires||0);});
+  var head=aTH(['Code','Amount','Status','Used By','Created','Expires']);
+  if(!arr.length){tbl.innerHTML=head+'<tbody><tr><td colspan="6" style="text-align:center;padding:24px;color:#8A7E72;font-style:italic;">No gift codes yet. Generate some above!</td></tr></tbody>';return;}
+  var now=Date.now();
+  tbl.innerHTML=head+'<tbody>'+arr.map(function(g){
+    var expired=g.expires&&now>g.expires;
+    var status=g.used?aBdg('approved').replace('approved','used'):expired?'<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:#FFE5E5;color:#C0392B;">expired</span>':aBdg('pending').replace('pending','active');
+    var expStr=g.expires?new Date(g.expires).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+    return '<tr>'
+      +aTD('<strong style="font-family:monospace;font-size:14px;letter-spacing:1px;cursor:pointer;" onclick="copyCode(\''+g.code+'\')" title="Click to copy">'+g.code+'</strong>')
+      +aTD('<strong style="color:#C8860A;">'+g.amount+' Birr</strong>')
+      +aTD(status)
+      +aTD(g.usedAt?'<span style="font-size:12px;">'+g.usedAt+'</span>':'—')
+      +aTD(g.created||'—','font-size:12px;color:#8A7E72;')
+      +aTD(expStr,'font-size:12px;color:'+(expired?'#C0392B':'#8A7E72')+';')
+      +'</tr>';
+  }).join('')+'</tbody>';
+}
+</script>
+</body>
+</html>
